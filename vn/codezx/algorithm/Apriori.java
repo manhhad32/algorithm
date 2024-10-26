@@ -27,7 +27,7 @@ public class Apriori {
 
     // Hàm sinh ứng viên và kiểm tra độ hỗ trợ
     private static Map<Set<String>, Integer> generateAndFilterCandidates(List<Set<String>> prevFrequentItemsets, List<List<String>> transactions, int minSupportCount) {
-        Map<Set<String>, Integer> candidateCount = new HashMap<>();
+        Map<Set<String>, Integer> frequentItem = new HashMap<>();
 
         // Sinh các ứng viên Ck từ Lk-1 và đếm support
         for (int i = 0; i < prevFrequentItemsets.size(); i++) {
@@ -50,13 +50,13 @@ public class Apriori {
 
                     // Lưu ứng viên nếu support >= minSupportCount
                     if (count >= minSupportCount) {
-                        candidateCount.put(candidate, count);
+                        frequentItem.put(candidate, count);
                     }
                 }
             }
         }
 
-        return candidateCount;
+        return frequentItem;
     }
 
     // Hàm chính của thuật toán Apriori
@@ -71,11 +71,11 @@ public class Apriori {
         // Vòng lặp sinh các tập phổ biến lớn hơn
         while (!currentFrequentItemsets.isEmpty()) {
             // Tích hợp sinh ứng viên và kiểm tra độ hỗ trợ
-            Map<Set<String>, Integer> candidateCount = generateAndFilterCandidates(currentFrequentItemsets, transactions, minSupportCount);
+            Map<Set<String>, Integer> fItemSet = generateAndFilterCandidates(currentFrequentItemsets, transactions, minSupportCount);
 
             // Cập nhật tập phổ biến hiện tại
-            currentFrequentItemsets = new ArrayList<>(candidateCount.keySet());
-            allFrequentItemsets.putAll(candidateCount);
+            currentFrequentItemsets = new ArrayList<>(fItemSet.keySet());
+            allFrequentItemsets.putAll(fItemSet);
             k++;
         }
 
