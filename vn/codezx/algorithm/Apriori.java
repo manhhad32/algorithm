@@ -8,100 +8,99 @@ import java.util.*;
 
 public class Apriori {
 
-    private List<Set<String>> transactions;
-    private int minSupport;
+    // Hàm tạo tập phổ biến L1 từ giao dịch
+    private static Map<Set<String>, Integer> createL1(List<List<String>> transactions, int minSupportCount) {
+        Map<Set<String>, Integer> L1 = new HashMap<>();
 
-    public Apriori(List<Set<String>> transactions, int minSupport) {
-        this.transactions = transactions;
-        this.minSupport = minSupport;
+        for (List<String> transaction : transactions) {
+            Set<String> uniqueItems = new HashSet<>(transaction); // Loại bỏ trùng lặp trong mỗi giao dịch
+            for (String item : uniqueItems) {
+                Set<String> singleItem = new HashSet<>(Collections.singletonList(item));
+                L1.put(singleItem, L1.getOrDefault(singleItem, 0) + 1);
+            }
+        }
+
+        // Lọc các tập phổ biến có support >= minSupportCount
+        L1.entrySet().removeIf(entry -> entry.getValue() < minSupportCount);
+        return L1;
     }
 
-    public List<Set<String>> run() {
-        List<Set<String>> frequentItemsets = new ArrayList<>();
-        int k = 1;
+    // Hàm sinh ứng viên và kiểm tra độ hỗ trợ
+    private static Map<Set<String>, Integer> generateAndFilterCandidates(List<Set<String>> prevFrequentItemsets, List<List<String>> transactions, int minSupportCount) {
+        Map<Set<String>, Integer> candidateCount = new HashMap<>();
 
-        // Khởi tạo tập itemset đầu tiên
-        List<Set<String>> currentItemsets = generateInitialItemsets();
+        // Sinh các ứng viên Ck từ Lk-1 và đếm support
+        for (int i = 0; i < prevFrequentItemsets.size(); i++) {
+            for (int j = i + 1; j < prevFrequentItemsets.size(); j++) {
+                // Tạo ứng viên bằng cách hợp nhất hai tập phổ biến trước đó
+                Set<String> candidate = new HashSet<>(prevFrequentItemsets.get(i));
+                candidate.addAll(prevFrequentItemsets.get(j));
 
-        while (!currentItemsets.isEmpty()) {
-            // Lấy itemset phổ biến
-            List<Set<String>> frequentItemset = getFrequentItemsets(currentItemsets);
-            frequentItemsets.addAll(frequentItemset);
-            // Tạo itemset tiếp theo
-            currentItemsets = generateNextItemsets(frequentItemset, k);
+                // Kiểm tra kích thước ứng viên có tăng 1
+                if (candidate.size() == prevFrequentItemsets.get(0).size() + 1) {
+                    int count = 0;
+
+                    // Đếm số lần xuất hiện của ứng viên trong các giao dịch
+                    for (List<String> transaction : transactions) {
+                        Set<String> uniqueTransaction = new HashSet<>(transaction);
+                        if (uniqueTransaction.containsAll(candidate)) {
+                            count++;
+                        }
+                    }
+
+                    // Lưu ứng viên nếu support >= minSupportCount
+                    if (count >= minSupportCount) {
+                        candidateCount.put(candidate, count);
+                    }
+                }
+            }
+        }
+
+        return candidateCount;
+    }
+
+    // Hàm chính của thuật toán Apriori
+    public static Map<Set<String>, Integer> apriori(List<List<String>> transactions, int minSupportCount) {
+        // Tính toán L1
+        Map<Set<String>, Integer> frequentItemsets = createL1(transactions, minSupportCount);
+        Map<Set<String>, Integer> allFrequentItemsets = new HashMap<>(frequentItemsets);
+
+        List<Set<String>> currentFrequentItemsets = new ArrayList<>(frequentItemsets.keySet());
+        int k = 2;
+
+        // Vòng lặp sinh các tập phổ biến lớn hơn
+        while (!currentFrequentItemsets.isEmpty()) {
+            // Tích hợp sinh ứng viên và kiểm tra độ hỗ trợ
+            Map<Set<String>, Integer> candidateCount = generateAndFilterCandidates(currentFrequentItemsets, transactions, minSupportCount);
+
+            // Cập nhật tập phổ biến hiện tại
+            currentFrequentItemsets = new ArrayList<>(candidateCount.keySet());
+            allFrequentItemsets.putAll(candidateCount);
             k++;
         }
 
-        return frequentItemsets;
-    }
-
-    private List<Set<String>> generateInitialItemsets() {
-        Set<String> uniqueItems = new HashSet<>();
-        for (Set<String> transaction : transactions) {
-            uniqueItems.addAll(transaction);
-        }
-
-        List<Set<String>> itemsets = new ArrayList<>();
-        for (String item : uniqueItems) {
-            itemsets.add(new HashSet<>(Collections.singletonList(item)));
-        }
-        return itemsets;
-    }
-
-    private List<Set<String>> getFrequentItemsets(List<Set<String>> itemsets) {
-        Map<Set<String>, Integer> itemsetCount = new HashMap<>();
-        for (Set<String> transaction : transactions) {
-            for (Set<String> itemset : itemsets) {
-                if (transaction.containsAll(itemset)) {
-                    itemsetCount.put(itemset, itemsetCount.getOrDefault(itemset, 0) + 1);
-                }
-            }
-        }
-
-        List<Set<String>> frequentItemsets = new ArrayList<>();
-        for (Map.Entry<Set<String>, Integer> entry : itemsetCount.entrySet()) {
-            if (entry.getValue() >= minSupport) {
-                frequentItemsets.add(entry.getKey());
-            }
-        }
-        return frequentItemsets;
-    }
-
-    private List<Set<String>> generateNextItemsets(List<Set<String>> frequentItemsets, int k) {
-        List<Set<String>> newItemsets = new ArrayList<>();
-        for (int i = 0; i < frequentItemsets.size(); i++) {
-            for (int j = i + 1; j < frequentItemsets.size(); j++) {
-                Set<String> first = frequentItemsets.get(i);
-                Set<String> second = frequentItemsets.get(j);
-                Set<String> union = new HashSet<>(first);
-                union.addAll(second);
-
-                if (union.size() == k + 1) {
-                    newItemsets.add(union);
-                }
-            }
-        }
-        return newItemsets;
+        return allFrequentItemsets;
     }
 
     public static void main(String[] args) {
         // Ví dụ dữ liệu giao dịch
-        List<Set<String>> transactions = Arrays.asList(
-            new HashSet<>(Arrays.asList("A", "C", "T", "W")),
-            new HashSet<>(Arrays.asList("C", "D", "W")),
-            new HashSet<>(Arrays.asList("A", "C", "T", "W")),
-            new HashSet<>(Arrays.asList("A", "C", "D", "W")),
-            new HashSet<>(Arrays.asList("A", "C", "D", "T", "W")),
-            new HashSet<>(Arrays.asList("C", "D", "T"))
+        List<List<String>> transactions = Arrays.asList(
+            Arrays.asList("A", "C", "T", "W"),
+            Arrays.asList("C", "D", "W"),
+            Arrays.asList("A", "C", "T", "W"),
+            Arrays.asList("A", "C", "D", "W"),
+            Arrays.asList("A", "C", "D", "T", "W"),
+            Arrays.asList("C", "D", "T")
         );
 
-        int minSupport = (50*transactions.size()/100);
-        Apriori apriori = new Apriori(transactions, minSupport);
-        List<Set<String>> frequentItemsets = apriori.run();
+        int minSupport = (50 * transactions.size() / 100); // Đặt ngưỡng support tối thiểu
+        Map<Set<String>, Integer> frequentItemsets = apriori(transactions, minSupport);
 
+        // In các tập phổ biến và số lần xuất hiện (support)
         System.out.println("Frequent Itemsets:");
-        for (Set<String> itemset : frequentItemsets) {
-            System.out.println(itemset);
+        for (Set<String> itemset : frequentItemsets.keySet()) {
+            System.out.print(itemset);
+            System.out.println(" - Support: " + frequentItemsets.get(itemset));
         }
     }
 }
