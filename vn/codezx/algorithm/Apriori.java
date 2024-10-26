@@ -66,7 +66,6 @@ public class Apriori {
         Map<Set<String>, Integer> allFrequentItemsets = new HashMap<>(frequentItemsets);
 
         List<Set<String>> currentFrequentItemsets = new ArrayList<>(frequentItemsets.keySet());
-        int k = 2;
 
         // Vòng lặp sinh các tập phổ biến lớn hơn
         while (!currentFrequentItemsets.isEmpty()) {
@@ -76,7 +75,6 @@ public class Apriori {
             // Cập nhật tập phổ biến hiện tại
             currentFrequentItemsets = new ArrayList<>(fItemSet.keySet());
             allFrequentItemsets.putAll(fItemSet);
-            k++;
         }
 
         return allFrequentItemsets;
