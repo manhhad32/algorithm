@@ -10,7 +10,6 @@ public class PPCNode {
   int count;
   int preOrder;
   int postOrder;
-  PPCNode parent;
   List<PPCNode> children;
 
   public PPCNode(String itemID) {
@@ -34,7 +33,6 @@ public class PPCNode {
   // Thêm nút con mới
   public PPCNode addChild(String itemID) {
     PPCNode childNode = new PPCNode(itemID);
-    childNode.parent = this;
     children.add(childNode);
     return childNode;
   }
