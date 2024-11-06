@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class PrePostPlus {
 
-  private static final int minSupport = 3;
+  private static final int minSupport = 2;
 
   // Step 1: Count item frequency in transactions to determine F1
   private static Map<String, Integer> getItemFrequency(List<List<String>> transactions) {
@@ -43,12 +43,19 @@ public class PrePostPlus {
   public static void main(String[] args) {
     // Example transactions
     List<List<String>> transactions = Arrays.asList(
-        Arrays.asList("A", "C", "T", "W"),
+        /*Arrays.asList("A", "C", "T", "W"),
         Arrays.asList("C", "D", "W"),
         Arrays.asList("A", "C", "T", "W"),
         Arrays.asList("A", "C", "D", "W"),
         Arrays.asList("A", "C", "D", "T", "W"),
         Arrays.asList("C", "D", "T")
+
+         */
+        Arrays.asList("A", "F", "G"),
+        Arrays.asList("A", "B", "C", "E"),
+        Arrays.asList("B", "C", "E", "I"),
+        Arrays.asList("B", "C", "E", "H"),
+        Arrays.asList("B", "C", "D", "E", "F")
     );
 
     // Step 1: Calculate item frequency
