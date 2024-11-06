@@ -64,6 +64,7 @@ public class Apriori {
         allFrequentItemsets.put(k, new HashMap<>(frequentItemsets));
 
         List<Set<String>> currentFrequentItemsets = new ArrayList<>(frequentItemsets.keySet());
+        currentFrequentItemsets.stream().sorted();
 
         while (!currentFrequentItemsets.isEmpty()) {
             Map<Set<String>, Integer> candidateCount = generateAndFilterCandidates(currentFrequentItemsets, transactions, minSupportCount);
