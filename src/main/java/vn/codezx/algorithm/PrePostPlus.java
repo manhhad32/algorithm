@@ -1,15 +1,23 @@
 package vn.codezx.algorithm;
 
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PrePostPlus {
 
-  private static final int minSupport = 2;
+  private static final String REGEX_SPLIT_WORD = " ";
+  private static double minSupport = 2;
 
   // Step 1: Count item frequency in transactions to determine F1
   private static Map<String, Integer> getItemFrequency(List<List<String>> transactions) {
@@ -42,21 +50,34 @@ public class PrePostPlus {
 
   public static void main(String[] args) {
     // Example transactions
-    List<List<String>> transactions = Arrays.asList(
-        /*Arrays.asList("A", "C", "T", "W"),
+    List<List<String>> transactions = new ArrayList<>();
+        /*= Arrays.asList(
+        Arrays.asList("A", "C", "T", "W"),
         Arrays.asList("C", "D", "W"),
         Arrays.asList("A", "C", "T", "W"),
         Arrays.asList("A", "C", "D", "W"),
         Arrays.asList("A", "C", "D", "T", "W"),
         Arrays.asList("C", "D", "T")
 
-         */
+
         Arrays.asList("A", "F", "G"),
         Arrays.asList("A", "B", "C", "E"),
         Arrays.asList("B", "C", "E", "I"),
         Arrays.asList("B", "C", "E", "H"),
         Arrays.asList("B", "C", "D", "E", "F")
     );
+
+    */
+
+    List<String> lines = new ArrayList<>();
+    lines = readLines("data/chess.dat");
+    List<String> itemsets = new ArrayList<>();
+
+    for(String line: lines) {
+      itemsets.addAll(getNumbers(line));
+      transactions.add(itemsets);
+    }
+    minSupport = (0.5 * transactions.size());
 
     // Step 1: Calculate item frequency
     Map<String, Integer> frequencyMap = getItemFrequency(transactions);
@@ -91,4 +112,23 @@ public class PrePostPlus {
       }
     }
   }
+
+  private static List<String> readLines(String pathFile) {
+    List<String> lines = new ArrayList<>();
+    try {
+      Path path = Paths.get(pathFile);
+      lines = Files.readAllLines(path);
+
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return lines;
+  }
+
+  private static List<String> getNumbers(String line) {
+    List<String> words = new ArrayList<>();
+    words = Arrays.asList(line.split(REGEX_SPLIT_WORD));
+    return words;
+  }
+
 }
