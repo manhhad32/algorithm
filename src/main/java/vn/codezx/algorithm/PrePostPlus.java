@@ -7,19 +7,17 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 
 public class PrePostPlus {
 
   private static final String REGEX_SPLIT_WORD = " ";
-  private static double minSupport = 2;
+  private static double minSupport = 0;
 
-  // Step 1: Count item frequency in transactions to determine F1
+  // Đếm tần suất item trong giao dịch để xác định F1
   private static Map<String, Integer> getItemFrequency(List<List<String>> transactions) {
     Map<String, Integer> frequencyMap = new HashMap<>();
     for (List<String> transaction : transactions) {
@@ -30,105 +28,66 @@ public class PrePostPlus {
     return frequencyMap;
   }
 
-  // Step 2: Filter items by minSupport and sort each transaction by frequency
-  private static List<List<String>> getFrequentTransactions(List<List<String>> transactions,
-      Map<String, Integer> frequencyMap) {
-    List<List<String>> filteredTransactions = new ArrayList<>();
-    for (List<String> transaction : transactions) {
-      List<String> filtered = new ArrayList<>();
-      for (String item : transaction) {
-        if (frequencyMap.getOrDefault(item, 0) >= minSupport) {
-          filtered.add(item);
-        }
+  // Lọc item theo minSupport và sắp xếp từng giao dịch theo tần suất
+  private static List<String> filterAndSortTransaction(List<String> transaction, Map<String, Integer> frequencyMap) {
+    List<String> filtered = new ArrayList<>();
+    for (String item : transaction) {
+      if (frequencyMap.getOrDefault(item, 0) >= minSupport) {
+        filtered.add(item);
       }
-      filtered.sort(
-          (i1, i2) -> frequencyMap.get(i2) - frequencyMap.get(i1)); // Sort by frequency descending
-      filteredTransactions.add(filtered);
     }
-    return filteredTransactions;
+    filtered.sort((i1, i2) -> frequencyMap.get(i2) - frequencyMap.get(i1)); // Sắp xếp theo tần suất giảm dần
+    return filtered;
   }
 
   public static void main(String[] args) {
-    // Example transactions
-    List<List<String>> transactions = new ArrayList<>();
-        /*= Arrays.asList(
-        Arrays.asList("A", "C", "T", "W"),
-        Arrays.asList("C", "D", "W"),
-        Arrays.asList("A", "C", "T", "W"),
-        Arrays.asList("A", "C", "D", "W"),
-        Arrays.asList("A", "C", "D", "T", "W"),
-        Arrays.asList("C", "D", "T")
+    Path filePath = Paths.get("data/data-paper.dat");
 
-
-        Arrays.asList("A", "F", "G"),
-        Arrays.asList("A", "B", "C", "E"),
-        Arrays.asList("B", "C", "E", "I"),
-        Arrays.asList("B", "C", "E", "H"),
-        Arrays.asList("B", "C", "D", "E", "F")
-    );
-
-    */
-
-    List<String> lines = new ArrayList<>();
-    lines = readLines("data/chess.dat");
-    List<String> itemsets = new ArrayList<>();
-
-    for(String line: lines) {
-      itemsets.addAll(getNumbers(line));
-      transactions.add(itemsets);
-    }
-    minSupport = (0.5 * transactions.size());
-
-    // Step 1: Calculate item frequency
-    Map<String, Integer> frequencyMap = getItemFrequency(transactions);
-
-    // Step 2: Filter transactions by minSupport and sort items within each transaction
-    List<List<String>> filteredTransactions = getFrequentTransactions(transactions, frequencyMap);
-
-    // Step 3: Build the PPC-Tree
+    // Khởi tạo cây PPC
     PPCTree tree = new PPCTree();
-    for (List<String> transaction : filteredTransactions) {
-      tree.addTransaction(transaction);
+
+    try {
+      // Đếm tần suất từng item qua toàn bộ giao dịch
+      Map<String, Integer> frequencyMap = new HashMap<>();
+      Files.lines(filePath).forEach(line -> {
+        List<String> items = Arrays.asList(line.split(REGEX_SPLIT_WORD));
+        for (String item : items) {
+          frequencyMap.put(item, frequencyMap.getOrDefault(item, 0) + 1);
+        }
+      });
+
+      // Cập nhật giá trị minSupport dựa trên ngưỡng
+      minSupport = 0.4 * Files.lines(filePath).count();
+
+      // Đọc từng dòng và xử lý giao dịch ngay lập tức
+      Files.lines(filePath).forEach(line -> {
+        List<String> items = Arrays.asList(line.split(REGEX_SPLIT_WORD));
+        List<String> filteredTransaction = filterAndSortTransaction(items, frequencyMap);
+        tree.addTransaction(filteredTransaction); // Xây dựng cây PPC
+      });
+
+    } catch (IOException e) {
+      e.printStackTrace();
     }
 
-    // Step 4: Assign PreOrder and PostOrder numbers
+    // Gán PreOrder và PostOrder cho các nút trong cây
     tree.assignPrePostOrder(tree.root);
 
-    // Step 5: Display the PPC-Tree with PreOrder and PostOrder numbers
+    // Hiển thị cây PPC với PreOrder và PostOrder
     System.out.println("PPC-Tree with PreOrder and PostOrder:");
     tree.displayTree(tree.root, "");
 
-    // Additional Steps: Implement N-lists and use PrePost+ to find frequent itemsets
-    // This would involve creating and using N-lists to calculate intersections and patterns
-    // Step 6: Generate N-lists for each frequent item
+    // Sinh N-lists cho mỗi item
     Map<String, List<PPCNode>> nLists = tree.generateNLists();
     System.out.println("\nN-lists:");
     for (Map.Entry<String, List<PPCNode>> entry : nLists.entrySet()) {
       System.out.println("Item: " + entry.getKey());
       for (PPCNode node : entry.getValue()) {
         System.out.println(
-            "    Node - PreOrder: " + node.preOrder + ", PostOrder: " + node.postOrder + ", Count: "
-                + node.count);
+            "    Node : " + node.itemID + " - PreOrder: "+ node.preOrder + ", PostOrder: " + node.postOrder + ", Count: " + node.count
+        );
       }
     }
-  }
-
-  private static List<String> readLines(String pathFile) {
-    List<String> lines = new ArrayList<>();
-    try {
-      Path path = Paths.get(pathFile);
-      lines = Files.readAllLines(path);
-
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    return lines;
-  }
-
-  private static List<String> getNumbers(String line) {
-    List<String> words = new ArrayList<>();
-    words = Arrays.asList(line.split(REGEX_SPLIT_WORD));
-    return words;
   }
 
 }
