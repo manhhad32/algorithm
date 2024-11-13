@@ -14,9 +14,22 @@ public class PPCNode {
 
   public PPCNode(String itemID) {
     this.itemID = itemID;
-    this.count = 1; // Mặc định là 1 khi nút được tạo
+    if ("NULL".equals(itemID)) {
+      this.count = 0;
+    } else{
+      this.count = 1; // Mặc định là 1 khi nút được tạo
+    }
+
     this.preOrder = -1; // Chưa được gán mã PreOrder
     this.postOrder = -1; // Chưa được gán mã PostOrder
+    this.children = new ArrayList<>();
+  }
+
+  public PPCNode(String itemID, int preOrder, int postOrder, int count) {
+    this.itemID = itemID;
+    this.preOrder = preOrder;
+    this.postOrder = postOrder;
+    this.count = count;
     this.children = new ArrayList<>();
   }
 

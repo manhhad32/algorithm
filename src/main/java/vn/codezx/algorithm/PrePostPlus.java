@@ -41,7 +41,7 @@ public class PrePostPlus {
   }
 
   public static void main(String[] args) {
-    Path filePath = Paths.get("data/chess.dat");
+    Path filePath = Paths.get("data/data-paper.dat");
 
     // Khởi tạo cây PPC
     PPCTree tree = new PPCTree();
@@ -75,7 +75,7 @@ public class PrePostPlus {
 
     // Hiển thị cây PPC với PreOrder và PostOrder
     System.out.println("PPC-Tree with PreOrder and PostOrder:");
-    //tree.displayTree(tree.root, "");
+    tree.displayTree(tree.root, "");
 
     // Sinh N-lists cho mỗi item
     Map<String, List<PPCNode>> nLists = tree.generateNLists();
