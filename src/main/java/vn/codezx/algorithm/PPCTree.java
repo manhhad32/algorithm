@@ -83,19 +83,19 @@ public class PPCTree {
       for(int j = i+1; j < n; j++ ) {
         List<PPCNode> chilNodes = nListF1.get(itemSets.get(j));
         List<PPCNode> newNodes = new ArrayList<>();
-        int m = parentNodes.size();
         int support = 0;
-        for(int idp = 0; idp < m; idp++) {
-          for(int idc = 0; idc < chilNodes.size(); idc++) {
-            PPCNode newNode = createNewNode(parentNodes.get(idp), chilNodes.get(idc));
-            if(newNode != null) {
+        for (PPCNode parentNode : parentNodes) {
+          for (PPCNode chilNode : chilNodes) {
+            PPCNode newNode = createNewNode(parentNode, chilNode);
+            if (newNode != null) {
               newNodes.add(newNode);
               support += newNode.count;
             }
           }
         }
         if(support >= this.minSupport) {
-          nListFn.put(parentNodes.get(0).itemID.concat(chilNodes.get(0).itemID), newNodes);
+          String name = normalizationNameNode(parentNodes.get(0).itemID.concat(chilNodes.get(0).itemID));
+          nListFn.put(name, newNodes);
         }
       }
     }
@@ -108,10 +108,27 @@ public class PPCTree {
   private PPCNode createNewNode(PPCNode parrent, PPCNode child) {
     PPCNode newNode = null;
     if(checkMerge(parrent, child)){
-      String newName = parrent.itemID.concat(child.itemID);
+      String newName = normalizationNameNode(parrent.itemID.concat(child.itemID));
       newNode = new PPCNode(newName, parrent.preOrder, parrent.postOrder, child.count);
     }
     return newNode;
+  }
+  private String normalizationNameNode(String s) {
+    StringBuilder sb = new StringBuilder(s.length());
+    boolean[] seen = new boolean[256];
+
+    // Traverse through all characters
+    for (int i = 0; i < s.length(); i++) {
+      char c = s.charAt(i);
+
+      // Check if s[i] is present before it
+      if (!seen[c]) {
+        sb.append(c);
+        seen[c] = true;
+      }
+    }
+
+    return sb.toString();
   }
 
   private int supportPPCNode(List<PPCNode> listNode) {
