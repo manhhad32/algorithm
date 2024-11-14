@@ -30,7 +30,7 @@ public class PrePostPlus {
   }
 
   public static void main(String[] args) {
-    Path filePath = Paths.get("data/data-paper.dat");
+    Path filePath = Paths.get("data/mushroom.dat");
 
     // init Tree.
     PPCTree tree = new PPCTree();
@@ -67,60 +67,41 @@ public class PrePostPlus {
     //tree.displayTree(tree.root, "");
 
     // genaration N-lists for each single item -- F1
-    Map<String, List<PPCNode>> nLists = tree.generateNLists();
-    List<List<PPCNode>> lnList = new ArrayList<>();
+    List<List<PPCNode>> nList = tree.genrateNList();
     System.out.print("\nN-lists:\n");
 
-    for (Map.Entry<String, List<PPCNode>> entry : nLists.entrySet()) {
-      System.out.print("Item: " + entry.getKey() + "--->");
-      List<PPCNode> nodes = new ArrayList<>();
-      for (PPCNode node : entry.getValue()) {
-
-        System.out.print(
-            "<(" + node.preOrder + "," + node.postOrder + "):" + node.count + ">,"
-        );
-        nodes.add(node);
-      }
-      lnList.add(nodes);
-      System.out.println();
-    }
-
+    printNList(nList);
 
     // genaration N-lists for each single item -- F2
-   List<List<PPCNode>> nLists2 = tree.generateNewPPCCode(lnList);
+   List<List<PPCNode>> nLists2 = tree.generateNewPPCCode(nList);
 
     System.out.print("\nN-lists F2:\n");
 
-    for (List<PPCNode> entry : nLists2) {
-      //System.out.print("Item: " + entry + "--->");
-      for (PPCNode node : entry) {
-        System.out.print(
-            node.itemID + "-->" +"<(" + node.preOrder + "," + node.postOrder + "):"  + node.count + ">,"
-        );
-      }
-      System.out.println();
+    printNList(nLists2);
 
-    }
-
-
-    nLists.clear();
-    lnList.clear();
+    nList.clear();
     System.gc();
     // genaration N-lists for each single item -- F3
-
     List<List<PPCNode>> nLists3 = tree.generateNewPPCCode(nLists2);
-
     System.out.print("\nN-lists F3:\n");
-    for (List<PPCNode> entry : nLists3) {
-      //System.out.print("Item: " + entry + "--->");
-      for (PPCNode node : entry) {
-        System.out.print(
-            node.itemID + "-->" +"<(" + node.preOrder + "," + node.postOrder + "):"  + node.count + ">,"
-        );
+    printNList(nLists3);
+
+  }
+  private static void printNList(List<List<PPCNode>> nList) {
+    for (List<PPCNode> node : nList) {
+      int size = node.size();
+      for (int i = 0; i < size; i ++) {
+        String info = "<(" + node.get(i).preOrder + ","
+            + node.get(i).postOrder + "):" + node.get(i).count + ">";
+        if(i == 0 && size > 1) {
+          info = node.get(i).itemID + "-->" + info + ",";
+        } else if (i < size - 2) {
+          info = info + ",";
+        }
+        System.out.print(info);
+
       }
       System.out.println();
-
     }
-
   }
 }

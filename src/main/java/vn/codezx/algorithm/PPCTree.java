@@ -71,6 +71,22 @@ public class PPCTree {
     return nLists;
   }
 
+  public List<List<PPCNode>> genrateNList() {
+    Map<String, List<PPCNode>> nLists = new HashMap<>();
+    populateNLists(root, nLists);
+    List<List<PPCNode>> lnList = new ArrayList<>();
+    for (Map.Entry<String, List<PPCNode>> entry : nLists.entrySet()) {
+
+      List<PPCNode> nodes = new ArrayList<>();
+      for (PPCNode node : entry.getValue()) {
+
+        nodes.add(node);
+      }
+      lnList.add(nodes);
+    }
+    return lnList;
+  }
+
   //Generate N-lists for Fn item base on Fn-1
   public List<List<PPCNode>> generateNewPPCCode( List<List<PPCNode>> nListF1) {
     List<List<PPCNode>> nListFn = new ArrayList<>();
