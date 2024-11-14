@@ -96,10 +96,7 @@ public class PPCTree {
             }
           }
         }
-
         if (support >= this.minSupport) {
-          String name = normalizationNameNode(
-              parentNodes.get(0).itemID.concat(chilNodes.get(0).itemID));
           nListFn.add(newNodes);
         }
       }
