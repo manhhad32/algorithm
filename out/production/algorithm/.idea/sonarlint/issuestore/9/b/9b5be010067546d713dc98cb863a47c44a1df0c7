@@ -1,0 +1,10 @@
+
+m	java:S117"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ÂÃëÂ8ıÌÉÁ¬2
+~	java:S125"<This block of commented-out lines of code should be removed.(¨„ôû8ã£‹Á¬2J$fe79fe9f-f105-4db4-84ec-71b228855b00
+o
+java:S3776"RRefactor this method to reduce its Cognitive Complexity from 19 to the 15 allowed.(²³Îÿ8ÍÉÁ¬2
+L	java:S106_"+Replace this use of System.out by a logger.(¾Êğªşÿÿÿÿ8„ÍÉÁ¬2
+V
+java:S2864`"4Iterate over the "entrySet" instead of the "keySet".(±—ÏÉıÿÿÿÿ8„ÍÉÁ¬2
+L	java:S106a"+Replace this use of System.out by a logger.(åÍÿßşÿÿÿÿ8„ÍÉÁ¬2
+G	java:S106c"+Replace this use of System.out by a logger.(¤Ò®é8…ÍÉÁ¬2
