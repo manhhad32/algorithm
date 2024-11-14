@@ -30,7 +30,7 @@ public class PrePostPlus {
   }
 
   public static void main(String[] args) {
-    Path filePath = Paths.get("data/pumsb.dat");
+    Path filePath = Paths.get("data/data-paper.dat");
 
     // init Tree.
     PPCTree tree = new PPCTree();
@@ -95,7 +95,7 @@ public class PrePostPlus {
       //System.out.print("Item: " + entry + "--->");
       for (PPCNode node : entry) {
         System.out.print(
-            "<(" + node.preOrder + "," + node.postOrder + ")," + node.itemID + ":" + node.count + ">,"
+            node.itemID + "-->" +"<(" + node.preOrder + "," + node.postOrder + "):"  + node.count + ">,"
         );
       }
       System.out.println();
@@ -115,7 +115,7 @@ public class PrePostPlus {
       //System.out.print("Item: " + entry + "--->");
       for (PPCNode node : entry) {
         System.out.print(
-            "<(" + node.preOrder + "," + node.postOrder + ")," + node.itemID + ":" + node.count + ">,"
+            node.itemID + "-->" +"<(" + node.preOrder + "," + node.postOrder + "):"  + node.count + ">,"
         );
       }
       System.out.println();
