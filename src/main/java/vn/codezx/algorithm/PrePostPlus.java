@@ -30,7 +30,7 @@ public class PrePostPlus {
   }
 
   public static void main(String[] args) {
-    Path filePath = Paths.get("data/chess.dat");
+    Path filePath = Paths.get("data/data-paper.dat");
 
     // init Tree.
     PPCTree tree = new PPCTree();
@@ -63,47 +63,59 @@ public class PrePostPlus {
     tree.assignPrePostOrder(tree.root);
 
     // Display PPCTree
-    System.out.println("PPC-Tree with PreOrder and PostOrder:");
-    tree.displayTree(tree.root, "");
+    //System.out.println("PPC-Tree with PreOrder and PostOrder:");
+    //tree.displayTree(tree.root, "");
 
     // genaration N-lists for each single item -- F1
     Map<String, List<PPCNode>> nLists = tree.generateNLists();
+    List<List<PPCNode>> lnList = new ArrayList<>();
     System.out.print("\nN-lists:\n");
+
     for (Map.Entry<String, List<PPCNode>> entry : nLists.entrySet()) {
       System.out.print("Item: " + entry.getKey() + "--->");
+      List<PPCNode> nodes = new ArrayList<>();
       for (PPCNode node : entry.getValue()) {
+
         System.out.print(
             "<(" + node.preOrder + "," + node.postOrder + "):" + node.count + ">,"
         );
+        nodes.add(node);
       }
+      lnList.add(nodes);
       System.out.println();
     }
+
+
     // genaration N-lists for each single item -- F2
-    Map<String, List<PPCNode>> nLists2 = tree.generateNewPPCCode(nLists);
+   List<List<PPCNode>> nLists2 = tree.generateNewPPCCode(lnList);
 
     System.out.print("\nN-lists F2:\n");
-    for (Map.Entry<String, List<PPCNode>> entry : nLists2.entrySet()) {
-      System.out.print("Item: " + entry.getKey() + "--->");
-      for (PPCNode node : entry.getValue()) {
+
+    for (List<PPCNode> entry : nLists2) {
+      //System.out.print("Item: " + entry + "--->");
+      for (PPCNode node : entry) {
         System.out.print(
-            "<(" + node.preOrder + "," + node.postOrder + "):" + node.count + ">,"
+            node.itemID + "-->" +"<(" + node.preOrder + "," + node.postOrder + "):"  + node.count + ">,"
         );
       }
       System.out.println();
 
     }
 
+
     nLists.clear();
+    lnList.clear();
     System.gc();
     // genaration N-lists for each single item -- F3
-    Map<String, List<PPCNode>> nLists3 = tree.generateNewPPCCode(nLists2);
+
+    List<List<PPCNode>> nLists3 = tree.generateNewPPCCode(nLists2);
 
     System.out.print("\nN-lists F3:\n");
-    for (Map.Entry<String, List<PPCNode>> entry : nLists3.entrySet()) {
-      System.out.print("Item: " + entry.getKey() + "--->");
-      for (PPCNode node : entry.getValue()) {
+    for (List<PPCNode> entry : nLists3) {
+      //System.out.print("Item: " + entry + "--->");
+      for (PPCNode node : entry) {
         System.out.print(
-            "<(" + node.preOrder + "," + node.postOrder + "):" + node.count + ">,"
+            node.itemID + "-->" +"<(" + node.preOrder + "," + node.postOrder + "):"  + node.count + ">,"
         );
       }
       System.out.println();

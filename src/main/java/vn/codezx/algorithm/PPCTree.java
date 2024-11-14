@@ -3,8 +3,10 @@ package vn.codezx.algorithm;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class PPCTree {
@@ -71,28 +73,32 @@ public class PPCTree {
   }
 
   //Generate N-lists for Fn item base on Fn-1
-  public Map<String, List<PPCNode>> generateNewPPCCode(Map<String, List<PPCNode>> nListF1) {
-    Map<String, List<PPCNode>> nListFn = new HashMap<>();
-    List<String> itemSets = nListF1.keySet().stream().collect(Collectors.toList());
-    int n = itemSets.size();
-    for (int i = 0; i < n-1; i++) {
-      List<PPCNode> parentNodes = nListF1.get(itemSets.get(i));
-
-      List<PPCNode> chilNodes = nListF1.get(itemSets.get(i+1));
-      List<PPCNode> newNodes = new ArrayList<>();
-      int support = 0;
-      for (PPCNode parentNode : parentNodes) {
-        for (PPCNode chilNode : chilNodes) {
-          PPCNode newNode = createNewNode(parentNode, chilNode);
-          if (newNode != null) {
-            newNodes.add(newNode);
-            support += newNode.count;
+  public List<List<PPCNode>> generateNewPPCCode( List<List<PPCNode>> nListF1) {
+    List<List<PPCNode>> nListFn = new ArrayList<>();
+    Set<String> uniqueNode = new HashSet<>();
+    int n = nListF1.size();
+    for (int i = 0; i < n; i++) {
+      List<PPCNode> parentNodes = nListF1.get(i);
+      for(int j = i+1; j < n; j++) {
+        List<PPCNode> chilNodes = nListF1.get(j);
+        List<PPCNode> newNodes = new ArrayList<>();
+        int support = 0;
+        for (PPCNode parentNode : parentNodes) {
+          for (PPCNode chilNode : chilNodes) {
+            PPCNode newNode = createNewNode(parentNode, chilNode);
+            if (newNode != null) {
+              String uniqueValue = Integer.toString(newNode.preOrder)
+                  .concat(Integer.toString(newNode.postOrder)).concat(Integer.toString(newNode.count));
+              if(uniqueNode.add(uniqueValue)) {
+                newNodes.add(newNode);
+                support += newNode.count;
+              }
+            }
           }
         }
-      }
-      if(support >= this.minSupport) {
-        String name = normalizationNameNode(parentNodes.get(0).itemID.concat(chilNodes.get(0).itemID));
-        nListFn.put(name, newNodes);
+        if (support >= this.minSupport) {
+          nListFn.add(newNodes);
+        }
       }
 
     }
