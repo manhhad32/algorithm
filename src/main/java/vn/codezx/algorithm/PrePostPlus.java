@@ -15,18 +15,7 @@ import java.util.Map;
 public class PrePostPlus {
 
   private static final String REGEX_SPLIT_WORD = " ";
-  private static double minSupport = 0;
-
-  // Đếm tần suất item trong giao dịch để xác định F1
-  private static Map<String, Integer> getItemFrequency(List<List<String>> transactions) {
-    Map<String, Integer> frequencyMap = new HashMap<>();
-    for (List<String> transaction : transactions) {
-      for (String item : transaction) {
-        frequencyMap.put(item, frequencyMap.getOrDefault(item, 0) + 1);
-      }
-    }
-    return frequencyMap;
-  }
+  private static int minSupport = 0;
 
   // Lọc item theo minSupport và sắp xếp từng giao dịch theo tần suất
   private static List<String> filterAndSortTransaction(List<String> transaction, Map<String, Integer> frequencyMap) {
@@ -43,11 +32,11 @@ public class PrePostPlus {
   public static void main(String[] args) {
     Path filePath = Paths.get("data/data-paper.dat");
 
-    // Khởi tạo cây PPC
+    // init Tree.
     PPCTree tree = new PPCTree();
 
     try {
-      // Đếm tần suất từng item qua toàn bộ giao dịch
+      // count frequent each item set
       Map<String, Integer> frequencyMap = new HashMap<>();
       Files.lines(filePath).forEach(line -> {
         List<String> items = Arrays.asList(line.split(REGEX_SPLIT_WORD));
@@ -56,10 +45,10 @@ public class PrePostPlus {
         }
       });
 
-      // Cập nhật giá trị minSupport dựa trên ngưỡng
-      minSupport = 0.4 * Files.lines(filePath).count();
-
-      // Đọc từng dòng và xử lý giao dịch ngay lập tức
+      // calculate minSupport
+      minSupport = (int) (0.4 * Files.lines(filePath).count());
+      tree.setMinSupport(minSupport);
+      // Read each transaction and build PPCTree.
       Files.lines(filePath).forEach(line -> {
         List<String> items = Arrays.asList(line.split(REGEX_SPLIT_WORD));
         List<String> filteredTransaction = filterAndSortTransaction(items, frequencyMap);
@@ -70,24 +59,55 @@ public class PrePostPlus {
       e.printStackTrace();
     }
 
-    // Gán PreOrder và PostOrder cho các nút trong cây
+    // assign preOrder, postOrder in tree.
     tree.assignPrePostOrder(tree.root);
 
-    // Hiển thị cây PPC với PreOrder và PostOrder
+    // Display PPCTree
     System.out.println("PPC-Tree with PreOrder and PostOrder:");
     tree.displayTree(tree.root, "");
 
-    // Sinh N-lists cho mỗi item
+    // genaration N-lists for each single item -- F1
     Map<String, List<PPCNode>> nLists = tree.generateNLists();
-    System.out.println("\nN-lists:");
+    System.out.print("\nN-lists:\n");
     for (Map.Entry<String, List<PPCNode>> entry : nLists.entrySet()) {
-      System.out.println("Item: " + entry.getKey());
+      System.out.print("Item: " + entry.getKey() + "--->");
       for (PPCNode node : entry.getValue()) {
-        System.out.println(
-            "PreOrder: "+ node.preOrder + ", PostOrder: " + node.postOrder + ", Count: " + node.count
+        System.out.print(
+            "<(" + node.preOrder + "," + node.postOrder + "):" + node.count + ">,"
         );
       }
+      System.out.println();
     }
-  }
+    // genaration N-lists for each single item -- F2
+    Map<String, List<PPCNode>> nLists2 = tree.generateNewPPCCode(nLists);
 
+    System.out.print("\nN-lists F2:\n");
+    for (Map.Entry<String, List<PPCNode>> entry : nLists2.entrySet()) {
+      System.out.print("Item: " + entry.getKey() + "--->");
+      for (PPCNode node : entry.getValue()) {
+        System.out.print(
+            "<(" + node.preOrder + "," + node.postOrder + "):" + node.count + ">,"
+        );
+      }
+      System.out.println();
+
+    }
+    nLists.clear();
+    // genaration N-lists for each single item -- F3
+    Map<String, List<PPCNode>> nLists3 = tree.generateNewPPCCode(nLists2);
+
+    System.out.print("\nN-lists F3:\n");
+    for (Map.Entry<String, List<PPCNode>> entry : nLists3.entrySet()) {
+      System.out.print("Item: " + entry.getKey() + "--->");
+      for (PPCNode node : entry.getValue()) {
+        System.out.print(
+            "<(" + node.preOrder + "," + node.postOrder + "):" + node.count + ">,"
+        );
+      }
+      System.out.println();
+
+    }
+
+
+  }
 }

@@ -2,6 +2,7 @@ package vn.codezx.algorithm;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -13,11 +14,14 @@ public class PPCTree {
   PPCNode root;
   private int preOrderCounter = 0;
   private int postOrderCounter = 0;
+  private int minSupport;
 
   public PPCTree() {
     root = new PPCNode("NULL"); // Initialize root with itemID as NULL
   }
-
+  public void setMinSupport(int minSupport) {
+    this.minSupport =minSupport;
+  }
   // Add transaction to the tree
   public void addTransaction(List<String> transaction) {
     PPCNode currentNode = root;
@@ -51,8 +55,10 @@ public class PPCTree {
     return;
    }
 
-    System.out.println(indent + "Item: " + node.itemID + ", Count: " + node.count +
-        ", PreOrder: " + node.preOrder + ", PostOrder: " + node.postOrder);
+
+    System.out.println(indent + "{(" + node.preOrder + "," + node.postOrder +"), "
+        + node.itemID  + ":" + node.count + "}");
+
 
     for (PPCNode child : node.children) {
       displayTree(child, indent + "  ");
@@ -60,66 +66,63 @@ public class PPCTree {
   }
 
   // Step 6: Generate N-lists for each item
-  public Map<String, List<PPCNode>> generateNLists() {
+  public Map<String,List<PPCNode>> generateNLists() {
     Map<String, List<PPCNode>> nLists = new HashMap<>();
     populateNLists(root, nLists);
-    Map<String, List<PPCNode>> result = generateNewPPCCode(nLists);
-    return result;
+    return nLists;
   }
 
-  private Map<String, List<PPCNode>> generateNewPPCCode(Map<String, List<PPCNode>> nListF1) {
+  //Generate N-lists for Fn item base on Fn-1
+  public Map<String, List<PPCNode>> generateNewPPCCode(Map<String, List<PPCNode>> nListF1) {
+    Map<String, List<PPCNode>> nListFn = new HashMap<>();
     List<String> itemSets = nListF1.keySet().stream().collect(Collectors.toList());
-    int sizeItemSets = itemSets.size();
-    int step = 1;
-    for(int i = 0; i <= sizeItemSets - step; i++) {
-      List<PPCNode> nodeF1i =  nListF1.get(itemSets.get(i));
-      if(nodeF1i == null) {
-        continue;
-      }
-      int idxF1i = 0;
-      for(int j = i + 1; j < sizeItemSets;  j++ ) {
-        if(idxF1i < nodeF1i.size()) {
-          PPCNode nodei = nodeF1i.get(idxF1i);
-          List<PPCNode> nodeF1j = nListF1.get(itemSets.get(j));
-          if ((nodeF1j == null)) {
-            continue;
-          }
-          int numM = 1;
-          String newId = nodei.itemID;
-          List<PPCNode> nPPCNodes = new ArrayList<>();
-          for (int k = 0; k < nodeF1j.size(); k++) {
-            if (numM > step) {
-              continue;
+    int n = itemSets.size();
+    for (int i = 0; i < n; i++) {
+      List<PPCNode> parentNodes = nListF1.get(itemSets.get(i));
+
+      for(int j = i+1; j < n; j++ ) {
+        List<PPCNode> chilNodes = nListF1.get(itemSets.get(j));
+        List<PPCNode> newNodes = new ArrayList<>();
+        int m = parentNodes.size();
+        int support = 0;
+        for(int idp = 0; idp < m; idp++) {
+          for(int idc = 0; idc < chilNodes.size(); idc++) {
+            PPCNode newNode = createNewNode(parentNodes.get(idp), chilNodes.get(idc));
+            if(newNode != null) {
+              newNodes.add(newNode);
+              support += newNode.count;
             }
-            PPCNode ppcNodej = nodeF1j.get(k);
-            if ((ppcNodej.preOrder < nodei.preOrder) || (ppcNodej.postOrder > nodei.postOrder)) {
-              continue;
-            }
-            newId = newId.concat(",").concat(ppcNodej.itemID);
-            int preOrder = nodei.preOrder;
-            int postOrder = nodei.postOrder;
-            int count;
-            if ((ppcNodej.preOrder == nodei.preOrder) && (ppcNodej.postOrder == nodei.postOrder)) {
-              count = ppcNodej.count + nodei.count;
-            } else {
-              count = ppcNodej.count;
-            }
-            PPCNode nPPCNode = new PPCNode(newId, preOrder, postOrder, count);
-            nPPCNodes.add(nPPCNode);
-            numM++;
           }
-          if (!nPPCNodes.isEmpty()) {
-            nListF1.put(newId, nPPCNodes);
-          }
-          step++;
         }
-        idxF1i++;
+        if(support >= this.minSupport) {
+          nListFn.put(parentNodes.get(0).itemID.concat(chilNodes.get(0).itemID), newNodes);
+        }
       }
-
-
     }
-    return nListF1;
+    return nListFn;
   }
+
+  private boolean checkMerge(PPCNode parrent, PPCNode child) {
+    return (parrent.preOrder < child.preOrder) && (parrent.postOrder > child.postOrder);
+  }
+  private PPCNode createNewNode(PPCNode parrent, PPCNode child) {
+    PPCNode newNode = null;
+    if(checkMerge(parrent, child)){
+      String newName = parrent.itemID.concat(child.itemID);
+      newNode = new PPCNode(newName, parrent.preOrder, parrent.postOrder, child.count);
+    }
+    return newNode;
+  }
+
+  private int supportPPCNode(List<PPCNode> listNode) {
+    int support = 0;
+    for(PPCNode ppcNode : listNode) {
+      support += ppcNode.count;
+    }
+    return support;
+  }
+
+
 
   // Recursive function to populate N-lists
   private void populateNLists(PPCNode node, Map<String, List<PPCNode>> nLists) {
