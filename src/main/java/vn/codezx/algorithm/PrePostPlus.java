@@ -30,7 +30,7 @@ public class PrePostPlus {
   }
 
   public static void main(String[] args) {
-    Path filePath = Paths.get("data/data-paper.dat");
+    Path filePath = Paths.get("data/chess.dat");
 
     // init Tree.
     PPCTree tree = new PPCTree();
@@ -92,6 +92,7 @@ public class PrePostPlus {
       System.out.println();
 
     }
+
     nLists.clear();
     // genaration N-lists for each single item -- F3
     Map<String, List<PPCNode>> nLists3 = tree.generateNewPPCCode(nLists2);
@@ -107,7 +108,6 @@ public class PrePostPlus {
       System.out.println();
 
     }
-
 
   }
 }
