@@ -130,17 +130,7 @@ public class PPCTree {
 
     return sb.toString();
   }
-
-  private int supportPPCNode(List<PPCNode> listNode) {
-    int support = 0;
-    for(PPCNode ppcNode : listNode) {
-      support += ppcNode.count;
-    }
-    return support;
-  }
-
-
-
+  
   // Recursive function to populate N-lists
   private void populateNLists(PPCNode node, Map<String, List<PPCNode>> nLists) {
    if (node == null) {
