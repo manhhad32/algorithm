@@ -73,7 +73,7 @@ public class PPCTree {
   //Generate N-lists for Fn item base on Fn-1
   public Map<String, List<PPCNode>> generateNewPPCCode(Map<String, List<PPCNode>> nListF1) {
     Map<String, List<PPCNode>> nListFn = new HashMap<>();
-    List<String> itemSets = nListF1.keySet().stream().collect(Collectors.toList());
+    List<String> itemSets = new ArrayList<>(nListF1.keySet());
     int n = itemSets.size();
     for (int i = 0; i < n; i++) {
       List<PPCNode> parentNodes = nListF1.get(itemSets.get(i));
