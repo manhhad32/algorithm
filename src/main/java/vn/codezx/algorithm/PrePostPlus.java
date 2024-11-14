@@ -94,6 +94,7 @@ public class PrePostPlus {
     }
 
     nLists.clear();
+    System.gc();
     // genaration N-lists for each single item -- F3
     Map<String, List<PPCNode>> nLists3 = tree.generateNewPPCCode(nLists2);
 
