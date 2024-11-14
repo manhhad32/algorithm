@@ -75,24 +75,27 @@ public class PPCTree {
     Map<String, List<PPCNode>> nListFn = new HashMap<>();
     List<String> itemSets = nListF1.keySet().stream().collect(Collectors.toList());
     int n = itemSets.size();
-    for (int i = 0; i < n-1; i++) {
+    for (int i = 0; i < n; i++) {
       List<PPCNode> parentNodes = nListF1.get(itemSets.get(i));
-
-      List<PPCNode> chilNodes = nListF1.get(itemSets.get(i+1));
-      List<PPCNode> newNodes = new ArrayList<>();
-      int support = 0;
-      for (PPCNode parentNode : parentNodes) {
-        for (PPCNode chilNode : chilNodes) {
-          PPCNode newNode = createNewNode(parentNode, chilNode);
-          if (newNode != null) {
-            newNodes.add(newNode);
-            support += newNode.count;
+      for(int j = i+1; j < n; j++) {
+        List<PPCNode> chilNodes = nListF1.get(itemSets.get(j));
+        List<PPCNode> newNodes = new ArrayList<>();
+        int support = 0;
+        for (PPCNode parentNode : parentNodes) {
+          for (PPCNode chilNode : chilNodes) {
+            PPCNode newNode = createNewNode(parentNode, chilNode);
+            if (newNode != null) {
+              newNodes.add(newNode);
+              support += newNode.count;
+            }
           }
         }
-      }
-      if(support >= this.minSupport) {
-        String name = normalizationNameNode(parentNodes.get(0).itemID.concat(chilNodes.get(0).itemID));
-        nListFn.put(name, newNodes);
+
+        if (support >= this.minSupport) {
+          String name = normalizationNameNode(
+              parentNodes.get(0).itemID.concat(chilNodes.get(0).itemID));
+          nListFn.put(name, newNodes);
+        }
       }
 
     }

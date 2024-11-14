@@ -30,7 +30,7 @@ public class PrePostPlus {
   }
 
   public static void main(String[] args) {
-    Path filePath = Paths.get("data/chess.dat");
+    Path filePath = Paths.get("data/pumsb.dat");
 
     // init Tree.
     PPCTree tree = new PPCTree();
@@ -63,12 +63,13 @@ public class PrePostPlus {
     tree.assignPrePostOrder(tree.root);
 
     // Display PPCTree
-    System.out.println("PPC-Tree with PreOrder and PostOrder:");
-    tree.displayTree(tree.root, "");
+    //System.out.println("PPC-Tree with PreOrder and PostOrder:");
+    //tree.displayTree(tree.root, "");
 
     // genaration N-lists for each single item -- F1
     Map<String, List<PPCNode>> nLists = tree.generateNLists();
     System.out.print("\nN-lists:\n");
+
     for (Map.Entry<String, List<PPCNode>> entry : nLists.entrySet()) {
       System.out.print("Item: " + entry.getKey() + "--->");
       for (PPCNode node : entry.getValue()) {
@@ -78,10 +79,12 @@ public class PrePostPlus {
       }
       System.out.println();
     }
+
     // genaration N-lists for each single item -- F2
     Map<String, List<PPCNode>> nLists2 = tree.generateNewPPCCode(nLists);
 
     System.out.print("\nN-lists F2:\n");
+
     for (Map.Entry<String, List<PPCNode>> entry : nLists2.entrySet()) {
       System.out.print("Item: " + entry.getKey() + "--->");
       for (PPCNode node : entry.getValue()) {
@@ -93,9 +96,11 @@ public class PrePostPlus {
 
     }
 
+
     nLists.clear();
     System.gc();
     // genaration N-lists for each single item -- F3
+    /*
     Map<String, List<PPCNode>> nLists3 = tree.generateNewPPCCode(nLists2);
 
     System.out.print("\nN-lists F3:\n");
@@ -109,6 +114,8 @@ public class PrePostPlus {
       System.out.println();
 
     }
+
+     */
 
   }
 }
