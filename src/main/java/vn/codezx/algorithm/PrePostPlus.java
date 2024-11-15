@@ -93,14 +93,13 @@ public class PrePostPlus {
       for (int i = 0; i < size; i ++) {
         String info = "<(" + node.get(i).preOrder + ","
             + node.get(i).postOrder + "):" + node.get(i).count + ">";
-        if(i == 0 && size > 1) {
-          info = node.get(i).itemID + "-->" + info + ",";
-        } else if (i < size - 2) {
-          info = info + ",";
+        if(i == 0) {
+          info = node.get(i).itemID + "-->" + info;
         }
         System.out.print(info);
 
       }
+
       System.out.println();
     }
   }
