@@ -126,7 +126,7 @@ public class PPCTree {
   private PPCNode createNewNode(PPCNode parrent, PPCNode child) {
     PPCNode newNode = null;
     if(checkMerge(parrent, child)){
-      String newName = normalizationNameNode(parrent.itemID.concat(child.itemID));
+      String newName = parrent.itemID.concat(child.itemID);
       newNode = new PPCNode(newName, parrent.preOrder, parrent.postOrder, child.count);
     }
     return newNode;
