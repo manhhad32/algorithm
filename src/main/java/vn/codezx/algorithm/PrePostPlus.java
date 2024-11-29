@@ -86,6 +86,7 @@ public class PrePostPlus {
     List<List<PPCNode>> nLists3 = tree.generateNewPPCCode(nLists2, itemFrequencies);
     System.out.print("\nN-lists F3:\n");
     printNList(nLists3);
+    System.out.print("\nFrequency Items:\n");
     for(List<String> itemFrequency : itemFrequencies) {
       System.out.println(itemFrequency);
     }

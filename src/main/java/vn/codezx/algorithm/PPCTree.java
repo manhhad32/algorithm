@@ -76,19 +76,20 @@ public class PPCTree {
     populateNLists(root, nLists);
     List<List<PPCNode>> lnList = new ArrayList<>();
     Set<String> uniqueItemSet = new HashSet<>();
-    List<String> item = new ArrayList<>();
-    for (Map.Entry<String, List<PPCNode>> entry : nLists.entrySet()) {
 
+    for (Map.Entry<String, List<PPCNode>> entry : nLists.entrySet()) {
+      List<String> item = new ArrayList<>();
       List<PPCNode> nodes = new ArrayList<>();
       for (PPCNode node : entry.getValue()) {
         nodes.add(node);
         if(uniqueItemSet.add(node.itemID)) {
           item.add(node.itemID);
+          itemFrequency.add(item);
         }
       }
       lnList.add(nodes);
     }
-    itemFrequency.add(item);
+
     return lnList;
   }
 
@@ -108,7 +109,7 @@ public class PPCTree {
             PPCNode newNode = createNewNode(parentNode, chilNode);
             if (newNode != null) {
               String uniqueValue = Integer.toString(newNode.preOrder)
-                  .concat(Integer.toString(newNode.postOrder)).concat(Integer.toString(newNode.count));
+                  .concat(Integer.toString(newNode.postOrder));
               if(uniqueNode.add(uniqueValue)) {
                 newNodes.add(newNode);
                 support += newNode.count;
