@@ -30,7 +30,7 @@ public class PrePostPlus {
   }
 
   public static void main(String[] args) {
-    Path filePath = Paths.get("data/mushroom.dat");
+    Path filePath = Paths.get("data/data-paper.dat");
 
     // init Tree.
     PPCTree tree = new PPCTree();
@@ -66,14 +66,15 @@ public class PrePostPlus {
     //System.out.println("PPC-Tree with PreOrder and PostOrder:");
     //tree.displayTree(tree.root, "");
 
+    List<List<String>> itemFrequencies = new ArrayList<>();
     // genaration N-lists for each single item -- F1
-    List<List<PPCNode>> nList = tree.genrateNList();
-    System.out.print("\nN-lists:\n");
+    List<List<PPCNode>> nList = tree.genrateNList(itemFrequencies);
+    System.out.print("\nN-lzists:\n");
 
     printNList(nList);
 
     // genaration N-lists for each single item -- F2
-   List<List<PPCNode>> nLists2 = tree.generateNewPPCCode(nList);
+   List<List<PPCNode>> nLists2 = tree.generateNewPPCCode(nList, itemFrequencies);
 
     System.out.print("\nN-lists F2:\n");
 
@@ -82,9 +83,12 @@ public class PrePostPlus {
     nList.clear();
     System.gc();
     // genaration N-lists for each single item -- F3
-    List<List<PPCNode>> nLists3 = tree.generateNewPPCCode(nLists2);
+    List<List<PPCNode>> nLists3 = tree.generateNewPPCCode(nLists2, itemFrequencies);
     System.out.print("\nN-lists F3:\n");
     printNList(nLists3);
+    for(List<String> itemFrequency : itemFrequencies) {
+      System.out.println(itemFrequency);
+    }
 
   }
   private static void printNList(List<List<PPCNode>> nList) {

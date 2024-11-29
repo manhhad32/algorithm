@@ -71,24 +71,29 @@ public class PPCTree {
     return nLists;
   }
 
-  public List<List<PPCNode>> genrateNList() {
+  public List<List<PPCNode>> genrateNList(List<List<String>> itemFrequency) {
     Map<String, List<PPCNode>> nLists = new HashMap<>();
     populateNLists(root, nLists);
     List<List<PPCNode>> lnList = new ArrayList<>();
+    Set<String> uniqueItemSet = new HashSet<>();
+    List<String> item = new ArrayList<>();
     for (Map.Entry<String, List<PPCNode>> entry : nLists.entrySet()) {
 
       List<PPCNode> nodes = new ArrayList<>();
       for (PPCNode node : entry.getValue()) {
-
         nodes.add(node);
+        if(uniqueItemSet.add(node.itemID)) {
+          item.add(node.itemID);
+        }
       }
       lnList.add(nodes);
     }
+    itemFrequency.add(item);
     return lnList;
   }
 
   //Generate N-lists for Fn item base on Fn-1
-  public List<List<PPCNode>> generateNewPPCCode( List<List<PPCNode>> nListF1) {
+  public List<List<PPCNode>> generateNewPPCCode( List<List<PPCNode>> nListF1, List<List<String>> itemFrequency) {
     List<List<PPCNode>> nListFn = new ArrayList<>();
     Set<String> uniqueNode = new HashSet<>();
     int n = nListF1.size();
@@ -111,8 +116,13 @@ public class PPCTree {
             }
           }
         }
+        List<String> item = new ArrayList<>();
         if (support >= this.minSupport) {
           nListFn.add(newNodes);
+          for(PPCNode node : newNodes) {
+            item.add(node.itemID);
+          }
+          itemFrequency.add(item);
         }
       }
 
@@ -126,27 +136,23 @@ public class PPCTree {
   private PPCNode createNewNode(PPCNode parrent, PPCNode child) {
     PPCNode newNode = null;
     if(checkMerge(parrent, child)){
-      String newName = parrent.itemID.concat(child.itemID);
+      String newName = normalizationNameNode(parrent.itemID.concat(",").concat(child.itemID));
       newNode = new PPCNode(newName, parrent.preOrder, parrent.postOrder, child.count);
     }
     return newNode;
   }
   private String normalizationNameNode(String s) {
-    StringBuilder sb = new StringBuilder(s.length());
-    boolean[] seen = new boolean[256];
-
-    // Traverse through all characters
-    for (int i = 0; i < s.length(); i++) {
-      char c = s.charAt(i);
-
-      // Check if s[i] is present before it
-      if (!seen[c]) {
-        sb.append(c);
-        seen[c] = true;
+    String newName = "";
+    String[] items = s.split(",");
+    List<String> uniqueItems = new ArrayList<>();
+    Set<String> uniqueItemSet= new HashSet<>();
+    for(String item : items) {
+      if(uniqueItemSet.add(item)) {
+        uniqueItems.add(item);
       }
     }
-
-    return sb.toString();
+    newName = String.join(",", uniqueItems);
+    return newName ;
   }
 
   // Recursive function to populate N-lists
