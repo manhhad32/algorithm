@@ -97,6 +97,7 @@ public class PPCTree {
   public List<List<PPCNode>> generateNewPPCCode( List<List<PPCNode>> nListF1, List<List<String>> itemFrequency) {
     List<List<PPCNode>> nListFn = new ArrayList<>();
     Set<String> uniqueNode = new HashSet<>();
+    Set<String> uniqueItemFrequency = new HashSet<>();
     int n = nListF1.size();
     for (int i = 0; i < n; i++) {
       List<PPCNode> parentNodes = nListF1.get(i);
@@ -109,19 +110,22 @@ public class PPCTree {
             PPCNode newNode = createNewNode(parentNode, chilNode);
             if (newNode != null) {
               String uniqueValue = Integer.toString(newNode.preOrder)
-                  .concat(Integer.toString(newNode.postOrder));
+                  .concat(Integer.toString(newNode.postOrder)).concat(Integer.toString(newNode.count));
               if(uniqueNode.add(uniqueValue)) {
                 newNodes.add(newNode);
                 support += newNode.count;
               }
             }
           }
+
         }
         List<String> item = new ArrayList<>();
         if (support >= this.minSupport) {
           nListFn.add(newNodes);
           for(PPCNode node : newNodes) {
-            item.add(node.itemID);
+            if(uniqueItemFrequency.add(node.itemID)) {
+              item.add(node.itemID);
+            }
           }
           itemFrequency.add(item);
         }
