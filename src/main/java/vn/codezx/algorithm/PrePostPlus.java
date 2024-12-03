@@ -15,9 +15,9 @@ import java.util.Map;
 public class PrePostPlus {
 
   private static final String REGEX_SPLIT_WORD = " ";
-  private static final String NAME_DATA_TEST = "data/data-paper.dat";
+  private static final String NAME_DATA_TEST = "data/mushroom.dat";
   private static final double THRESHOLD_XI = 0.4;
-  private static int F_LEVEL = 3;
+  private static final int F_LEVEL = 3;
   private static final boolean DISPLAY_PPC_TREE = true;
 
 
