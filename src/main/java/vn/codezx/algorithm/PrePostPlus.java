@@ -15,10 +15,14 @@ import java.util.Map;
 public class PrePostPlus {
 
   private static final String REGEX_SPLIT_WORD = " ";
-  private static int minSupport = 0;
+  private static final String NAME_DATA_TEST = "data/data-paper.dat";
+  private static final double THRESHOLD_XI = 0.4;
+  private static int F_LEVEL = 3;
+  private static final boolean DISPLAY_PPC_TREE = true;
+
 
   // Lọc item theo minSupport và sắp xếp từng giao dịch theo tần suất
-  private static List<String> filterAndSortTransaction(List<String> transaction, Map<String, Integer> frequencyMap) {
+  private static List<String> filterAndSortTransaction(List<String> transaction, Map<String, Integer> frequencyMap, int minSupport) {
     List<String> filtered = new ArrayList<>();
     for (String item : transaction) {
       if (frequencyMap.getOrDefault(item, 0) >= minSupport) {
@@ -30,7 +34,7 @@ public class PrePostPlus {
   }
 
   public static void main(String[] args) {
-    Path filePath = Paths.get("data/data-paper.dat");
+    Path filePath = Paths.get(NAME_DATA_TEST);
 
     // init Tree.
     PPCTree tree = new PPCTree();
@@ -46,12 +50,12 @@ public class PrePostPlus {
       });
 
       // calculate minSupport
-      minSupport = (int) (0.4 * Files.lines(filePath).count());
+      int minSupport = (int) (THRESHOLD_XI * Files.lines(filePath).count());
       tree.setMinSupport(minSupport);
       // Read each transaction and build PPCTree.
       Files.lines(filePath).forEach(line -> {
         List<String> items = Arrays.asList(line.split(REGEX_SPLIT_WORD));
-        List<String> filteredTransaction = filterAndSortTransaction(items, frequencyMap);
+        List<String> filteredTransaction = filterAndSortTransaction(items, frequencyMap, minSupport);
         tree.addTransaction(filteredTransaction); // Xây dựng cây PPC
       });
 
@@ -63,35 +67,35 @@ public class PrePostPlus {
     tree.assignPrePostOrder(tree.root);
 
     // Display PPCTree
-    //System.out.println("PPC-Tree with PreOrder and PostOrder:");
-    //tree.displayTree(tree.root, "");
+    if(DISPLAY_PPC_TREE) {
+      System.out.println("PPC-Tree with PreOrder and PostOrder:");
+      tree.displayTree(tree.root, "");
+    }
 
     List<List<String>> itemFrequencies = new ArrayList<>();
-    // genaration N-lists for each single item -- F1
-    List<List<PPCNode>> nList = tree.genrateNList(itemFrequencies);
-    System.out.print("\nN-lzists:\n");
-
-    printNList(nList);
-
-    // genaration N-lists for each single item -- F2
-   List<List<PPCNode>> nLists2 = tree.generateNewPPCCode(nList, itemFrequencies);
-
-    System.out.print("\nN-lists F2:\n");
-
-    printNList(nLists2);
-
-    nList.clear();
-    System.gc();
-    // genaration N-lists for each single item -- F3
-    List<List<PPCNode>> nLists3 = tree.generateNewPPCCode(nLists2, itemFrequencies);
-    System.out.print("\nN-lists F3:\n");
-    printNList(nLists3);
+    genNListFnFrequency(tree, F_LEVEL, itemFrequencies);
     System.out.print("\nFrequency Items:\n");
     for(List<String> itemFrequency : itemFrequencies) {
       System.out.println(itemFrequency);
     }
-
   }
+
+  private static void genNListFnFrequency(PPCTree tree, int fn, List<List<String>> itemFrequencies) {
+    List<List<PPCNode>> nListsFn;
+    nListsFn = tree.genrateNList(itemFrequencies);
+    System.out.print("\nN-lists F1:\n");
+    printNList(nListsFn);
+    int count = 0;
+    while (fn > 1) {
+      nListsFn = tree.generateNewPPCCode(nListsFn, itemFrequencies);
+      int idx = count + 2;
+      System.out.print("\nN-lists F"+idx+ ":" + "\n");
+      printNList(nListsFn);
+      count++;
+      fn--;
+    }
+  }
+
   private static void printNList(List<List<PPCNode>> nList) {
     for (List<PPCNode> node : nList) {
       int size = node.size();
