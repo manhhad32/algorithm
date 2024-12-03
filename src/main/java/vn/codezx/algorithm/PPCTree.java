@@ -109,8 +109,7 @@ public class PPCTree {
           for (PPCNode chilNode : chilNodes) {
             PPCNode newNode = createNewNode(parentNode, chilNode);
             if (newNode != null) {
-              String uniqueValue = Integer.toString(newNode.preOrder)
-                  .concat(Integer.toString(newNode.postOrder)).concat(Integer.toString(newNode.count));
+              String uniqueValue = newNode.itemID;
               if(uniqueNode.add(uniqueValue)) {
                 newNodes.add(newNode);
                 support += newNode.count;
@@ -156,6 +155,7 @@ public class PPCTree {
         uniqueItems.add(item);
       }
     }
+    uniqueItems.sort(String::compareTo);
     newName = String.join(",", uniqueItems);
     return newName ;
   }

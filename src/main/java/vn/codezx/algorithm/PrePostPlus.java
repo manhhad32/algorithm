@@ -16,9 +16,8 @@ public class PrePostPlus {
 
   private static final String REGEX_SPLIT_WORD = " ";
   private static final String NAME_DATA_TEST = "data/mushroom.dat";
-  private static final double THRESHOLD_XI = 0.4;
-  private static final int F_LEVEL = 3;
-  private static final boolean DISPLAY_PPC_TREE = true;
+  private static final double THRESHOLD_XI = 0.25;
+  private static final boolean DISPLAY_PPC_TREE = false;
 
 
   // Lọc item theo minSupport và sắp xếp từng giao dịch theo tần suất
@@ -34,6 +33,7 @@ public class PrePostPlus {
   }
 
   public static void main(String[] args) {
+    long startTime = System.nanoTime();
     Path filePath = Paths.get(NAME_DATA_TEST);
 
     // init Tree.
@@ -73,26 +73,32 @@ public class PrePostPlus {
     }
 
     List<List<String>> itemFrequencies = new ArrayList<>();
-    genNListFnFrequency(tree, F_LEVEL, itemFrequencies);
+    genNListFnFrequency(tree, itemFrequencies);
+    long endTime = System.nanoTime();
+    double totalTime = (endTime - startTime)/1000_000_000.00;
+
     System.out.print("\nFrequency Items:\n");
     for(List<String> itemFrequency : itemFrequencies) {
       System.out.println(itemFrequency);
     }
+    System.out.println("\n total time: " + totalTime);
   }
 
-  private static void genNListFnFrequency(PPCTree tree, int fn, List<List<String>> itemFrequencies) {
+  private static void genNListFnFrequency(PPCTree tree, List<List<String>> itemFrequencies) {
     List<List<PPCNode>> nListsFn;
     nListsFn = tree.genrateNList(itemFrequencies);
-    System.out.print("\nN-lists F1:\n");
-    printNList(nListsFn);
+    //System.out.print("\nN-lists F1:\n");
+    //printNList(nListsFn);
     int count = 0;
-    while (fn > 1) {
+    while (true) {
       nListsFn = tree.generateNewPPCCode(nListsFn, itemFrequencies);
       int idx = count + 2;
-      System.out.print("\nN-lists F"+idx+ ":" + "\n");
-      printNList(nListsFn);
+      //System.out.print("\nN-lists F"+idx+ ":" + "\n");
+      //printNList(nListsFn);
+      if(nListsFn.size() == 0 || nListsFn == null) {
+        break;
+      }
       count++;
-      fn--;
     }
   }
 
@@ -106,9 +112,7 @@ public class PrePostPlus {
           info = node.get(i).itemID + "-->" + info;
         }
         System.out.print(info);
-
       }
-
       System.out.println();
     }
   }
