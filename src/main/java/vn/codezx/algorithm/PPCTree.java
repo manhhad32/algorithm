@@ -105,19 +105,29 @@ public class PPCTree {
         List<PPCNode> chilNodes = nListF1.get(j);
         List<PPCNode> newNodes = new ArrayList<>();
         int support = 0;
-        for (PPCNode parentNode : parentNodes) {
-          for (PPCNode chilNode : chilNodes) {
+        //for (PPCNode parentNode : parentNodes) {
+          //for (PPCNode chilNode : chilNodes) {
+        int m = 0;
+        int k = 0;
+        int sizeParentNodes =  parentNodes.size();
+        int sizeChilNodes = chilNodes.size();
+        while ((m < sizeParentNodes) && (k < sizeChilNodes)) {
+          PPCNode parentNode = parentNodes.get(m);
+          PPCNode chilNode = chilNodes.get(k);
             PPCNode newNode = createNewNode(parentNode, chilNode);
             if (newNode != null) {
               String uniqueValue = newNode.itemID;
               if(uniqueNode.add(uniqueValue)) {
                 newNodes.add(newNode);
                 support += newNode.count;
+                k++;
+              } else {
+                m++;
               }
+            } else {
+                k++;
             }
           }
-
-        }
         List<String> item = new ArrayList<>();
         if (support >= this.minSupport) {
           nListFn.add(newNodes);
