@@ -15,8 +15,8 @@ import java.util.Map;
 public class PrePostPlus {
 
   private static final String REGEX_SPLIT_WORD = " ";
-  private static final String NAME_DATA_TEST = "data/mushroom.dat";
-  private static final double THRESHOLD_XI = 0.25;
+  private static final String NAME_DATA_TEST = "data/pumsb.dat";
+  private static final double THRESHOLD_XI = 0.7;
   private static final boolean DISPLAY_PPC_TREE = false;
 
 
