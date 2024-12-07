@@ -3,6 +3,7 @@ package vn.codezx.algorithm;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,8 +18,8 @@ import java.util.Set;
 
 
 public class PrePostPlus {
-  private static final double THRESHOLD_XI = 0.4; // Ngưỡng tần suất tối thiểu
-  private static final String DATA_FILE = "data/data-paper.dat";
+  private static final double THRESHOLD_XI = 0.7; // Ngưỡng tần suất tối thiểu
+  private static final String DATA_FILE = "data/pumsb.dat";
   private static int preOrderCounter = 0;
   private static int postOrderCounter = 0;
 
@@ -91,9 +92,16 @@ public class PrePostPlus {
 
     // In kết quả
     System.out.println("Frequent Itemsets:");
-    for (String itemset : finalFrequentItems) {
-      System.out.println(itemset);
-    }
+    try (FileWriter writer = new FileWriter("output/prepost+.txt")) {
+      for (String itemset : finalFrequentItems) {
+
+        writer.write(itemset + "\n");
+        //writer.append(itemset + "\n");
+      }
+      //System.out.println(itemset);
+    } catch (Exception e) {
+      e.fillInStackTrace();
+  }
     System.out.println("Total time: " + total);
   }
 
