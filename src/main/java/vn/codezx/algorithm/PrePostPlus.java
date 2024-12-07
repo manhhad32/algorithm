@@ -17,9 +17,12 @@ import java.util.Set;
 
 
 public class PrePostPlus {
-
   private static final double THRESHOLD_XI = 0.4; // Ngưỡng tần suất tối thiểu
-  private static final String DATA_FILE = "data/mushroom.dat";
+  private static final String DATA_FILE = "data/data-paper.dat";
+  private static int preOrderCounter = 0;
+  private static int postOrderCounter = 0;
+
+  // Class for PPCNode
   public static class PPCNode {
     String itemID;
     int count;
@@ -65,10 +68,12 @@ public class PrePostPlus {
     for (List<String> transaction : transactions) {
       buildPPCTree(root, transaction);
     }
+    // Set the preOrder and postOrder values for the nodes
+    assignPrePostOrder(root);
 
     // Bước 3: Tạo NLists cho F1
     Map<String, List<int[]>> nLists = new HashMap<>();
-    buildNLists(root, nLists, new int[]{0});
+    buildNLists(root, nLists);
 
     // Bước 4: Tìm tập phổ biến F1
     List<String> frequentItems = new ArrayList<>();
@@ -82,13 +87,14 @@ public class PrePostPlus {
     List<String> finalFrequentItems;
     finalFrequentItems = buildPatternTree(frequentItems, nLists, minSupport);
     double endTime = System.nanoTime();
-    double total = (endTime - startTime)/1000_000_000.00;
+    double total = (endTime - startTime) / 1_000_000_000.0;
+
     // In kết quả
     System.out.println("Frequent Itemsets:");
     for (String itemset : finalFrequentItems) {
       System.out.println(itemset);
     }
-    System.out.println("total time: "+ total);
+    System.out.println("Total time: " + total);
   }
 
   private static List<List<String>> readTransactions(String filePath) throws IOException {
@@ -117,14 +123,23 @@ public class PrePostPlus {
     }
   }
 
-  private static void buildNLists(PPCNode node, Map<String, List<int[]>> nLists, int[] preOrderCounter) {
-    node.preOrder = preOrderCounter[0]++;
+  private static void updatePrePostOrder(PPCNode node, int[] counter) {
+    node.preOrder = counter[0]++;
     for (PPCNode child : node.children) {
-      buildNLists(child, nLists, preOrderCounter);
+      updatePrePostOrder(child, counter);
     }
-    node.postOrder = preOrderCounter[0];
-    nLists.putIfAbsent(node.itemID, new ArrayList<>());
-    nLists.get(node.itemID).add(new int[]{node.preOrder, node.postOrder, node.count});
+    node.postOrder = counter[0]++;
+  }
+
+  private static void buildNLists(PPCNode node, Map<String, List<int[]>> nLists) {
+    for (PPCNode child : node.children) {
+      // Add the node's information (preOrder, postOrder, and count) to nLists
+      nLists.putIfAbsent(child.itemID, new ArrayList<>());
+      nLists.get(child.itemID).add(new int[]{child.preOrder, child.postOrder, child.count});
+
+      // Recursively build the NLists for child nodes
+      buildNLists(child, nLists);
+    }
   }
 
   private static List<int[]> NLintersection(List<int[]> nl1, List<int[]> nl2) {
@@ -166,8 +181,8 @@ public class PrePostPlus {
         List<int[]> intersection = NLintersection(nl1, nl2);
 
         // Tính toán support của itemset {item1, item2} từ intersection
-        int supportCount  = 0;
-        for(int[] item : intersection) {
+        int supportCount = 0;
+        for (int[] item : intersection) {
           supportCount += item[2];
         }
         if (supportCount >= minSupport) { // Kiểm tra support có thỏa mãn minSupport
@@ -176,24 +191,21 @@ public class PrePostPlus {
           arrNewPattern.add(item1);
           arrNewPattern.add(item2);
           arrNewPattern.sort(String::compareTo);
-          if(uniqueTran.add(arrNewPattern)) {
+          if (uniqueTran.add(arrNewPattern)) {
             nLists.put(newPattern, intersection);
             finalFrequentItems.add(newPattern);
             PPCNode patternRoot = new PPCNode(newPattern);
             buildPatternTreeHelper(patternRoot, intersection, nLists, frequentItems, finalFrequentItems, minSupport, uniqueTran);
           }
-
         }
       }
     }
     return finalFrequentItems;
   }
 
-
   private static void buildPatternTreeHelper(PPCNode node, List<int[]> intersection, Map<String, List<int[]>> nLists,
       List<String> frequentItems, List<String> finalFrequentItems, int minSupport, Set<List<String>> uniqueTran) {
     // Duyệt qua từng item trong frequentItems để xây dựng cây mẫu
-
     for (String item : frequentItems) {
       if (!node.itemID.contains(item)) {  // Đảm bảo item không bị trùng
         List<int[]> itemNList = nLists.get(item);
@@ -203,9 +215,8 @@ public class PrePostPlus {
 
           // Kiểm tra support của itemset mới
           if (!newIntersection.isEmpty()) {
-
             int supportCount = 0; // Số lượng phần tử giao nhau
-            for(int[] ints : newIntersection){
+            for (int[] ints : newIntersection) {
               supportCount += ints[2];
             }
             if (supportCount >= minSupport) { // Kiểm tra support
@@ -214,7 +225,7 @@ public class PrePostPlus {
               arrNewPattern.addAll(Arrays.asList(node.itemID.split(",")));
               arrNewPattern.add(item);
               arrNewPattern.sort(String::compareTo);
-              if(uniqueTran.add(arrNewPattern)) {
+              if (uniqueTran.add(arrNewPattern)) {
                 nLists.put(newPattern, newIntersection);
                 finalFrequentItems.add(newPattern);
                 PPCNode childNode = node.addChild(newPattern);
@@ -226,7 +237,14 @@ public class PrePostPlus {
       }
     }
   }
-
-
-
+  private static void assignPrePostOrder(PPCNode node) {
+    if (node == null) {
+      return;
+    }
+    node.preOrder = preOrderCounter++;
+    for (PPCNode child : node.children) {
+      assignPrePostOrder(child);
+    }
+    node.postOrder = postOrderCounter++;
+  }
 }
