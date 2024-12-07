@@ -10,15 +10,16 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 public class PrePostPlus {
 
-
   private static final double THRESHOLD_XI = 0.4; // Ngưỡng tần suất tối thiểu
-
+  private static final String DATA_FILE = "data/mushroom.dat";
   public static class PPCNode {
     String itemID;
     int count;
@@ -39,10 +40,10 @@ public class PrePostPlus {
   }
 
   public static void main(String[] args) throws IOException {
-    String filePath = "data/data-paper.dat";
-    List<List<String>> transactions = readTransactions(filePath);
-
     // Bước 1: Scan database lần 1
+    List<List<String>> transactions = readTransactions(DATA_FILE);
+
+    double startTime = System.nanoTime();
     Map<String, Integer> itemSupport = new HashMap<>();
     int totalTransactions = 0;
 
@@ -52,16 +53,14 @@ public class PrePostPlus {
         itemSupport.put(item, itemSupport.getOrDefault(item, 0) + 1);
       }
     }
-
     int minSupport = (int) Math.ceil(THRESHOLD_XI * totalTransactions);
-
     // Loại bỏ các item không thỏa mãn minsupport và sắp xếp transaction
     for (List<String> transaction : transactions) {
       transaction.removeIf(item -> itemSupport.get(item) < minSupport);
       transaction.sort((a, b) -> itemSupport.get(b) - itemSupport.get(a)); // Giảm dần
     }
 
-    // Bước 2: Scan database lần 2, xây dựng PPC-Tree
+    // Bước 2: xây dựng PPC-Tree
     PPCNode root = new PPCNode("null");
     for (List<String> transaction : transactions) {
       buildPPCTree(root, transaction);
@@ -80,13 +79,16 @@ public class PrePostPlus {
     }
 
     // Bước 5: Xây dựng Pattern Tree và tìm các tập phổ biến
-    List<String> finalFrequentItems = buildPatternTree(root, frequentItems, nLists, minSupport);
-
+    List<String> finalFrequentItems;
+    finalFrequentItems = buildPatternTree(frequentItems, nLists, minSupport);
+    double endTime = System.nanoTime();
+    double total = (endTime - startTime)/1000_000_000.00;
     // In kết quả
     System.out.println("Frequent Itemsets:");
     for (String itemset : finalFrequentItems) {
       System.out.println(itemset);
     }
+    System.out.println("total time: "+ total);
   }
 
   private static List<List<String>> readTransactions(String filePath) throws IOException {
@@ -94,7 +96,7 @@ public class PrePostPlus {
     try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
       String line;
       while ((line = br.readLine()) != null) {
-        transactions.add(new ArrayList<>(Arrays.asList(line.split("\\s+"))));
+        transactions.add(new ArrayList<>(Arrays.asList(line.split(" "))));
       }
     }
     return transactions;
@@ -134,7 +136,7 @@ public class PrePostPlus {
 
       if (n1[0] <= n2[0]) { // preOrder matches
         if (n1[1] >= n2[1]) { // postOrder matches
-          intersection.add(new int[]{n1[0], n1[1], Math.min(n1[2], n2[2])});
+          intersection.add(new int[]{n1[0], n1[1], n2[2]});
           i++;
           j++;
         } else if (n1[1] < n2[1]) {
@@ -151,15 +153,14 @@ public class PrePostPlus {
     return intersection;
   }
 
-  private static List<String> buildPatternTree(PPCNode root, List<String> frequentItems, Map<String, List<int[]>> nLists, int minSupport) {
+  private static List<String> buildPatternTree(List<String> frequentItems, Map<String, List<int[]>> nLists, int minSupport) {
     List<String> finalFrequentItems = new ArrayList<>(frequentItems);
-
+    Set<List<String>> uniqueTran = new HashSet<>();
     // Duyệt qua tất cả cặp items trong frequentItems
     for (int i = 0; i < frequentItems.size(); i++) {
       String item1 = frequentItems.get(i);
       for (int j = i + 1; j < frequentItems.size(); j++) {
         String item2 = frequentItems.get(j);
-
         List<int[]> nl1 = nLists.get(item1);
         List<int[]> nl2 = nLists.get(item2);
         List<int[]> intersection = NLintersection(nl1, nl2);
@@ -171,22 +172,28 @@ public class PrePostPlus {
         }
         if (supportCount >= minSupport) { // Kiểm tra support có thỏa mãn minSupport
           String newPattern = item1 + "," + item2;
-          nLists.put(newPattern, intersection);
-          finalFrequentItems.add(newPattern);
+          List<String> arrNewPattern = new ArrayList<>();
+          arrNewPattern.add(item1);
+          arrNewPattern.add(item2);
+          arrNewPattern.sort(String::compareTo);
+          if(uniqueTran.add(arrNewPattern)) {
+            nLists.put(newPattern, intersection);
+            finalFrequentItems.add(newPattern);
+            PPCNode patternRoot = new PPCNode(newPattern);
+            buildPatternTreeHelper(patternRoot, intersection, nLists, frequentItems, finalFrequentItems, minSupport, uniqueTran);
+          }
 
-          PPCNode patternRoot = new PPCNode(newPattern);
-          buildPatternTreeHelper(patternRoot, intersection, nLists, frequentItems, finalFrequentItems, minSupport);
         }
       }
     }
-
     return finalFrequentItems;
   }
 
 
   private static void buildPatternTreeHelper(PPCNode node, List<int[]> intersection, Map<String, List<int[]>> nLists,
-      List<String> frequentItems, List<String> finalFrequentItems, int minSupport) {
+      List<String> frequentItems, List<String> finalFrequentItems, int minSupport, Set<List<String>> uniqueTran) {
     // Duyệt qua từng item trong frequentItems để xây dựng cây mẫu
+
     for (String item : frequentItems) {
       if (!node.itemID.contains(item)) {  // Đảm bảo item không bị trùng
         List<int[]> itemNList = nLists.get(item);
@@ -196,14 +203,23 @@ public class PrePostPlus {
 
           // Kiểm tra support của itemset mới
           if (!newIntersection.isEmpty()) {
-            int supportCount = newIntersection.size(); // Số lượng phần tử giao nhau
+
+            int supportCount = 0; // Số lượng phần tử giao nhau
+            for(int[] ints : newIntersection){
+              supportCount += ints[2];
+            }
             if (supportCount >= minSupport) { // Kiểm tra support
               String newPattern = node.itemID + "," + item;
-              nLists.put(newPattern, newIntersection);
-              finalFrequentItems.add(newPattern);
-
-              PPCNode childNode = node.addChild(newPattern);
-              buildPatternTreeHelper(childNode, newIntersection, nLists, frequentItems, finalFrequentItems, minSupport);
+              List<String> arrNewPattern = new ArrayList<>();
+              arrNewPattern.addAll(Arrays.asList(node.itemID.split(",")));
+              arrNewPattern.add(item);
+              arrNewPattern.sort(String::compareTo);
+              if(uniqueTran.add(arrNewPattern)) {
+                nLists.put(newPattern, newIntersection);
+                finalFrequentItems.add(newPattern);
+                PPCNode childNode = node.addChild(newPattern);
+                buildPatternTreeHelper(childNode, newIntersection, nLists, frequentItems, finalFrequentItems, minSupport, uniqueTran);
+              }
             }
           }
         }
