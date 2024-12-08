@@ -5,9 +5,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -157,8 +155,8 @@ public class PrePostPlus {
       int[] n1 = nl1.get(i);
       int[] n2 = nl2.get(j);
 
-      if (n1[0] <= n2[0]) { // preOrder matches
-        if (n1[1] >= n2[1]) { // postOrder matches
+      if (n1[0] < n2[0]) { // preOrder matches
+        if (n1[1] > n2[1]) { // postOrder matches
           intersection.add(new int[]{n1[0], n1[1], n2[2]});
           j++;
         } else {
