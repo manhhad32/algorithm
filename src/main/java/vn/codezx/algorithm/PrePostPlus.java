@@ -124,7 +124,7 @@ public class PrePostPlus {
     }
   }
 
-  private static List<int[]> NLintersection(List<int[]> nl1, List<int[]> nl2) {
+  private static List<int[]> nLIntersection(List<int[]> nl1, List<int[]> nl2) {
     List<int[]> intersection = new ArrayList<>();
     int i = 0, j = 0;
     while (i < nl1.size() && j < nl2.size()) {
@@ -165,7 +165,7 @@ public class PrePostPlus {
         String item2 = frequentItems.get(j);
         List<int[]> nl1 = nLists.get(item1);
         List<int[]> nl2 = nLists.get(item2);
-        List<int[]> intersection = NLintersection(nl1, nl2);
+        List<int[]> intersection = nLIntersection(nl1, nl2);
 
         // Tính toán support của itemset {item1, item2} từ intersection
         int supportCount = 0;
@@ -198,7 +198,7 @@ public class PrePostPlus {
         List<int[]> itemNList = nLists.get(item);
         if (itemNList != null) {
           // Tính giao nhau của intersection và itemNList
-          List<int[]> newIntersection = NLintersection(intersection, itemNList);
+          List<int[]> newIntersection = nLIntersection(intersection, itemNList);
 
           // Kiểm tra support của itemset mới
           if (!newIntersection.isEmpty()) {
