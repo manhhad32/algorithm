@@ -6,6 +6,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,10 +19,11 @@ import java.util.Set;
 
 
 public class PrePostPlus {
-  private static final double THRESHOLD_XI = 0.25; // Ngưỡng tần suất tối thiểu
-  private static final String DATA_FILE = "data/mushroom.dat";
+  private static final double THRESHOLD_XI = 0.4; // Ngưỡng tần suất tối thiểu
+  private static final String DATA_FILE = "data/data-paper.dat";
   private static int preOrderCounter = 0;
   private static int postOrderCounter = 0;
+  private static int minSupport = 0;
 
 
 
@@ -36,8 +40,7 @@ public class PrePostPlus {
       for (String item : transaction) {
         itemSupport.put(item, itemSupport.getOrDefault(item, 0) + 1);
       }
-    }
-    int minSupport = (int) Math.ceil(THRESHOLD_XI * totalTransactions);
+    }minSupport = (int) Math.ceil(THRESHOLD_XI * totalTransactions);
     // Loại bỏ các item không thỏa mãn minsupport và sắp xếp transaction
     for (List<String> transaction : transactions) {
       transaction.removeIf(item -> itemSupport.get(item) < minSupport);
@@ -45,9 +48,37 @@ public class PrePostPlus {
     }
 
     // Bước 2: xây dựng PPC-Tree
+
+    //for (List<String> transaction : transactions) {
+    //  buildPPCTree(root, transaction);
+    //}
+
+    Path filePath = Paths.get(DATA_FILE);
+    // count frequent each item set
+    Map<String, Integer> frequencyMap = new HashMap<>();
+    // init Tree.
     PPCNode root = new PPCNode("null");
-    for (List<String> transaction : transactions) {
-      buildPPCTree(root, transaction);
+    try {
+
+      Files.lines(filePath).forEach(line -> {
+        List<String> items = Arrays.asList(line.split(" "));
+        for (String item : items) {
+          frequencyMap.put(item, frequencyMap.getOrDefault(item, 0) + 1);
+        }
+      });
+
+      // calculate minSupport
+      minSupport = (int) (THRESHOLD_XI * Files.lines(filePath).count());
+
+      // Read each transaction and build PPCTree.
+      Files.lines(filePath).forEach(line -> {
+        List<String> items = Arrays.asList(line.split(" "));
+        List<String> filteredTransaction = filterAndSortTransaction(items, frequencyMap, minSupport);
+        buildPPCTree(root, filteredTransaction); // Xây dựng cây PPC
+      });
+
+    } catch (IOException e) {
+      e.printStackTrace();
     }
     // Set the preOrder and postOrder values for the nodes
     assignPrePostOrder(root);
@@ -229,5 +260,15 @@ public class PrePostPlus {
       assignPrePostOrder(child);
     }
     node.postOrder = postOrderCounter++;
+  }
+  private static List<String> filterAndSortTransaction(List<String> transaction, Map<String, Integer> frequencyMap, int minSupport) {
+    List<String> filtered = new ArrayList<>();
+    for (String item : transaction) {
+      if (frequencyMap.getOrDefault(item, 0) >= minSupport) {
+        filtered.add(item);
+      }
+    }
+    filtered.sort((i1, i2) -> frequencyMap.get(i2) - frequencyMap.get(i1)); // Sắp xếp theo tần suất giảm dần
+    return filtered;
   }
 }
