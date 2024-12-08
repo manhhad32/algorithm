@@ -18,8 +18,8 @@ import java.util.Set;
 
 
 public class PrePostPlus {
-  private static final double THRESHOLD_XI = 0.7; // Ngưỡng tần suất tối thiểu
-  private static final String DATA_FILE = "data/pumsb.dat";
+  private static final double THRESHOLD_XI = 0.4; // Ngưỡng tần suất tối thiểu
+  private static final String DATA_FILE = "data/data-paper.dat";
   private static int preOrderCounter = 0;
   private static int postOrderCounter = 0;
 
@@ -160,15 +160,10 @@ public class PrePostPlus {
       if (n1[0] <= n2[0]) { // preOrder matches
         if (n1[1] >= n2[1]) { // postOrder matches
           intersection.add(new int[]{n1[0], n1[1], n2[2]});
-          i++;
           j++;
-        } else if (n1[1] < n2[1]) {
-          i++;
         } else {
-          j++;
+          i++;
         }
-      } else if (n1[0] < n2[0]) {
-        i++;
       } else {
         j++;
       }
