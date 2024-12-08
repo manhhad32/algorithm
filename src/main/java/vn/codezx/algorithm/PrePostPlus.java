@@ -1,8 +1,6 @@
 package vn.codezx.algorithm;
 
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -26,6 +24,7 @@ public class PrePostPlus {
   private static int preOrderCounter = 0;
   private static int postOrderCounter = 0;
   private static int minSupport = 0;
+  private static final String SPLIT_WORD = " ";
 
 
 
@@ -41,7 +40,7 @@ public class PrePostPlus {
     try {
       // step 1: Scan database first time
       Files.lines(filePath).forEach(line -> {
-        List<String> items = Arrays.asList(line.split(" "));
+        List<String> items = Arrays.asList(line.trim().split(SPLIT_WORD));
         for (String item : items) {
           frequencyMap.put(item, frequencyMap.getOrDefault(item, 0) + 1);
         }
@@ -53,7 +52,7 @@ public class PrePostPlus {
       // step 2: build PPC-Tree
       // Read each transaction and build PPCTree.
       Files.lines(filePath).forEach(line -> {
-        List<String> items = Arrays.asList(line.split(" "));
+        List<String> items = Arrays.asList(line.trim().split(SPLIT_WORD));
         List<String> filteredTransaction = filterAndSortTransaction(items, frequencyMap, minSupport);
         buildPPCTree(root, filteredTransaction);
       });
