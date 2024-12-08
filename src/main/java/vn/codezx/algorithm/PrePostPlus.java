@@ -99,17 +99,6 @@ public class PrePostPlus {
     System.out.println("Total time: " + total);
   }
 
-  private static List<List<String>> readTransactions(String filePath) throws IOException {
-    List<List<String>> transactions = new ArrayList<>();
-    try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-      String line;
-      while ((line = br.readLine()) != null) {
-        transactions.add(new ArrayList<>(Arrays.asList(line.split(" "))));
-      }
-    }
-    return transactions;
-  }
-
   private static void buildPPCTree(PPCNode root, List<String> transaction) {
     PPCNode currentNode = root;
     for (String item : transaction) {
@@ -123,14 +112,6 @@ public class PrePostPlus {
       childNode.count++;
       currentNode = childNode;
     }
-  }
-
-  private static void updatePrePostOrder(PPCNode node, int[] counter) {
-    node.preOrder = counter[0]++;
-    for (PPCNode child : node.children) {
-      updatePrePostOrder(child, counter);
-    }
-    node.postOrder = counter[0]++;
   }
 
   private static void buildNLists(PPCNode node, Map<String, List<int[]>> nLists) {
