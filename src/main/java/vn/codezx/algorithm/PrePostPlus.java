@@ -19,8 +19,10 @@ import java.util.Set;
 
 
 public class PrePostPlus {
-  private static final double THRESHOLD_XI = 0.1;
-  private static final String DATA_FILE = "data/kosarak.dat";
+  private static final double THRESHOLD_XI = 0.01;
+  private static final String DATA_FILE = "kosarak.dat";
+  private static final String PATH_FILE = "data/" + DATA_FILE;
+  private static final String PATH_OUTPUT = "output/" + DATA_FILE;
   private static int preOrderCounter = 0;
   private static int postOrderCounter = 0;
   private static int minSupport = 0;
@@ -31,7 +33,7 @@ public class PrePostPlus {
 
     double startTime = System.nanoTime();
 
-    Path filePath = Paths.get(DATA_FILE);
+    Path filePath = Paths.get(PATH_FILE);
     // count frequent each item set
     Map<String, Integer> frequencyMap = new HashMap<>();
     // init Tree.
@@ -82,12 +84,14 @@ public class PrePostPlus {
 
     // result
     System.out.println("Frequent Itemsets:");
-    try (FileWriter writer = new FileWriter("output/prepost+.txt")) {
+    try (FileWriter writer = new FileWriter(PATH_OUTPUT)) {
       for (String itemset : finalFrequentItems) {
 
         writer.write(itemset + "\n");
         //writer.append(itemset + "\n");
       }
+      writer.write("\nTHRESHOLD_XI: " + THRESHOLD_XI);
+      writer.write("\nTotal time: " + total);
       //System.out.println(itemset);
     } catch (Exception e) {
       e.fillInStackTrace();
@@ -151,6 +155,7 @@ public class PrePostPlus {
         if (n1[1] > n2[1]) { // postOrder matches
           intersection.add(new int[]{n1[0], n1[1], n2[2]});
           j++;
+          i++;
         } else {
           i++;
         }
