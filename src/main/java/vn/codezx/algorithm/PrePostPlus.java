@@ -16,30 +16,12 @@ import java.util.Set;
 
 
 public class PrePostPlus {
-  private static final double THRESHOLD_XI = 0.4; // Ngưỡng tần suất tối thiểu
-  private static final String DATA_FILE = "data/data-paper.dat";
+  private static final double THRESHOLD_XI = 0.25; // Ngưỡng tần suất tối thiểu
+  private static final String DATA_FILE = "data/mushroom.dat";
   private static int preOrderCounter = 0;
   private static int postOrderCounter = 0;
 
-  // Class for PPCNode
-  public static class PPCNode {
-    String itemID;
-    int count;
-    int preOrder;
-    int postOrder;
-    List<PPCNode> children = new ArrayList<>();
 
-    public PPCNode(String itemID) {
-      this.itemID = itemID;
-      this.count = 0;
-    }
-
-    public PPCNode addChild(String itemID) {
-      PPCNode child = new PPCNode(itemID);
-      this.children.add(child);
-      return child;
-    }
-  }
 
   public static void main(String[] args) throws IOException {
     // Bước 1: Scan database lần 1
