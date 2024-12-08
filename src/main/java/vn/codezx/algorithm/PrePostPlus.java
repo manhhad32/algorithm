@@ -28,30 +28,8 @@ public class PrePostPlus {
 
 
   public static void main(String[] args) throws IOException {
-    // Bước 1: Scan database lần 1
-    List<List<String>> transactions = readTransactions(DATA_FILE);
 
     double startTime = System.nanoTime();
-    Map<String, Integer> itemSupport = new HashMap<>();
-    int totalTransactions = 0;
-
-    for (List<String> transaction : transactions) {
-      totalTransactions++;
-      for (String item : transaction) {
-        itemSupport.put(item, itemSupport.getOrDefault(item, 0) + 1);
-      }
-    }minSupport = (int) Math.ceil(THRESHOLD_XI * totalTransactions);
-    // Loại bỏ các item không thỏa mãn minsupport và sắp xếp transaction
-    for (List<String> transaction : transactions) {
-      transaction.removeIf(item -> itemSupport.get(item) < minSupport);
-      transaction.sort((a, b) -> itemSupport.get(b) - itemSupport.get(a)); // Giảm dần
-    }
-
-    // Bước 2: xây dựng PPC-Tree
-
-    //for (List<String> transaction : transactions) {
-    //  buildPPCTree(root, transaction);
-    //}
 
     Path filePath = Paths.get(DATA_FILE);
     // count frequent each item set
@@ -59,49 +37,50 @@ public class PrePostPlus {
     // init Tree.
     PPCNode root = new PPCNode("null");
     try {
-
+      // step 1: Scan database first time
       Files.lines(filePath).forEach(line -> {
         List<String> items = Arrays.asList(line.split(" "));
         for (String item : items) {
           frequencyMap.put(item, frequencyMap.getOrDefault(item, 0) + 1);
         }
       });
-
       // calculate minSupport
       minSupport = (int) (THRESHOLD_XI * Files.lines(filePath).count());
       System.out.println("minSupport:" + minSupport);
+
+      // step 2: build PPC-Tree
       // Read each transaction and build PPCTree.
       Files.lines(filePath).forEach(line -> {
         List<String> items = Arrays.asList(line.split(" "));
         List<String> filteredTransaction = filterAndSortTransaction(items, frequencyMap, minSupport);
-        buildPPCTree(root, filteredTransaction); // Xây dựng cây PPC
+        buildPPCTree(root, filteredTransaction);
       });
 
     } catch (IOException e) {
       e.printStackTrace();
     }
-    // Set the preOrder and postOrder values for the nodes
+    // Set the preOrder and postOrder values for the tree
     assignPrePostOrder(root);
 
-    // Bước 3: Tạo NLists cho F1
+    // step 3: build NLists for F1
     Map<String, List<int[]>> nLists = new HashMap<>();
     buildNLists(root, nLists);
 
-    // Bước 4: Tìm tập phổ biến F1
+    // step 4: build F1
     List<String> frequentItems = new ArrayList<>();
-    for (String item : itemSupport.keySet()) {
-      if (itemSupport.get(item) >= minSupport) {
+    for (String item : frequencyMap.keySet()) {
+      if (frequencyMap.get(item) >= minSupport) {
         frequentItems.add(item);
       }
     }
 
-    // Bước 5: Xây dựng Pattern Tree và tìm các tập phổ biến
+    // step 5: build Pattern Tree and frequentItems
     List<String> finalFrequentItems;
     finalFrequentItems = buildPatternTree(frequentItems, nLists, minSupport);
     double endTime = System.nanoTime();
     double total = (endTime - startTime) / 1_000_000_000.0;
 
-    // In kết quả
+    // result
     System.out.println("Frequent Itemsets:");
     try (FileWriter writer = new FileWriter("output/prepost+.txt")) {
       for (String itemset : finalFrequentItems) {
