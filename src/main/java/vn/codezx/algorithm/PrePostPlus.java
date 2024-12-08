@@ -19,8 +19,8 @@ import java.util.Set;
 
 
 public class PrePostPlus {
-  private static final double THRESHOLD_XI = 0.4; // Ngưỡng tần suất tối thiểu
-  private static final String DATA_FILE = "data/mushroom.dat";
+  private static final double THRESHOLD_XI = 0.1; // Ngưỡng tần suất tối thiểu
+  private static final String DATA_FILE = "data/kosarak.dat";
   private static int preOrderCounter = 0;
   private static int postOrderCounter = 0;
   private static int minSupport = 0;
@@ -181,7 +181,7 @@ public class PrePostPlus {
       if((n1[0] == n2[0]) && (n1[1] == n2[1])) {
         for(int k = 0 ; k < intersection.size(); k++) {
           if((intersection.get(k)[0] == n1[0]) && (intersection.get(k)[1] == n1[1])) {
-            intersection.add(new int[]{n1[0], n1[1], n2[2] + intersection.get(k)[2]});
+            intersection.add(new int[]{n1[0], n1[1], n1[2] + intersection.get(k)[2]});
             intersection.remove(k);
           }
         }
