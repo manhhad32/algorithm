@@ -82,16 +82,13 @@ public class PrePostPlus {
     double total = (endTime - startTime) / 1_000_000_000.0;
 
     // result
-    System.out.println("Frequent Itemsets:");
     try (FileWriter writer = new FileWriter(PATH_OUTPUT)) {
       for (String itemset : finalFrequentItems) {
 
         writer.write(itemset + "\n");
-        //writer.append(itemset + "\n");
       }
       writer.write("\nTHRESHOLD_XI: " + THRESHOLD_XI);
       writer.write("\nTotal time: " + total);
-      //System.out.println(itemset);
     } catch (Exception e) {
       e.fillInStackTrace();
   }
