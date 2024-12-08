@@ -19,7 +19,7 @@ import java.util.Set;
 
 
 public class PrePostPlus {
-  private static final double THRESHOLD_XI = 0.1; // Ngưỡng tần suất tối thiểu
+  private static final double THRESHOLD_XI = 0.1;
   private static final String DATA_FILE = "data/kosarak.dat";
   private static int preOrderCounter = 0;
   private static int postOrderCounter = 0;
