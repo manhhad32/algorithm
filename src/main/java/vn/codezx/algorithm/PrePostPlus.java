@@ -91,7 +91,7 @@ public class PrePostPlus {
       writer.write("\nTotal time: " + total);
     } catch (Exception e) {
       e.fillInStackTrace();
-  }
+    }
     System.out.println("Total time: " + total);
   }
 
