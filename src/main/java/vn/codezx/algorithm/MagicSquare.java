@@ -63,9 +63,9 @@ public class MagicSquare {
   private static final int N = 3;
   private static final int MAGIC_SUM = N*((N*N) + 1)/2;
 
-  private static List<int[][]> listMagicSquare = new ArrayList<>();
-  private static int[][] square = new int[N][N];
-  private static boolean[] useNumbers = new boolean[N*N +1];
+  private static final List<int[][]> listMagicSquare = new ArrayList<>();
+  private static final int[][] square = new int[N][N];
+  private static final boolean[] useNumbers = new boolean[N*N +1];
 
   private static void createMagicSquare(int row, int col) {
     if(row == N){
