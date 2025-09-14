@@ -25,6 +25,38 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Problem Summary
+ * Tóm tắt bài toán
+ *You are given a square chessboard with a queen and some obstacles. Your task is to determine how many squares the queen can attack.
+ * Bạn sẽ được cho một bàn cờ vua hình vuông, trên đó có một quân hậu và một số chướng ngại vật. Nhiệm vụ của bạn là xác định có bao nhiêu ô vuông mà quân hậu có thể tấn công.
+ * Detailed Description
+ * Mô tả chi tiết
+ * A queen is standing on a chessboard of size n x n. The rows of the board are numbered from 1 to n, going from bottom to top. The columns are numbered from 1 to n, going from left to right. Each square is identified by a coordinate pair (r, c), which describes the row r and column c where the square is located.
+ * Một quân hậu đang đứng trên một bàn cờ vua kích thước n x n. Các hàng của bàn cờ được đánh số từ 1 đến n, đi từ dưới lên trên. Các cột được đánh số từ 1 đến n, đi từ trái sang phải. Mỗi ô vuông được xác định bởi một cặp tọa độ (r, c), mô tả hàng r và cột c nơi ô đó tọa lạc.
+ * The queen is standing at position (r_q, c_q). In one move, she can attack any square in any of eight directions (left, right, up, down, and four diagonals).
+ * Quân hậu đang đứng tại vị trí (r_q, c_q). Trong một nước đi, nó có thể tấn công bất kỳ ô nào theo một trong tám hướng (trái, phải, trên, dưới, và bốn đường chéo).
+ * There are obstacles on the board, each of which prevents the queen from attacking any square behind her on that attack path. For example, an obstacle at position (3, 5) will prevent the queen from attacking squares (3, 5), (2, 6), and (1, 7) (if they are on the same diagonal).
+ * Trên bàn cờ có các chướng ngại vật, mỗi chướng ngại vật sẽ ngăn quân hậu tấn công bất kỳ ô nào nằm phía sau nó trên đường tấn công đó. Ví dụ, một chướng ngại vật tại vị trí (3, 5) sẽ ngăn quân hậu tấn công các ô (3, 5), (2, 6), và (1, 7) (nếu chúng nằm trên cùng một đường chéo).
+ * The task is, given the queen's position and the positions of all the obstacles, to find and print the number of squares the queen can attack from her position.
+ * Nhiệm vụ là, cho vị trí của quân hậu và vị trí của tất cả các chướng ngại vật, hãy tìm và in ra số lượng ô vuông mà quân hậu có thể tấn công từ vị trí của mình.
+ * --------
+ * function queensAttack(int n, int k, int r_q, int c_q, List<List<Integer>> obstacles)
+ * Constraints:
+ * Ràng buộc:
+ * 0 < n ≤ 10^5
+ * 0 ≤ k ≤ 10^5
+ * n: số hàng và cột của bàn cờ
+ * n: number of rows and columns of the board
+ * k: số lượng chướng ngại vật trên bàn cờ
+ * k: number of obstacles on the board
+ * r_q: số hàng của vị trí quân hậu
+ * r_q: Queen's position row number
+ * c_q: số cột của vị trí quân hậu
+ * c_q: column number of queen position
+ *obstacles[k][2]: mỗi phần tử là một mảng gồm 2 số nguyên, thể hiện hàng và cột của một chướng ngại vật
+ * obstacles[k][2]: each element is an array of 2 integers, representing the row and column of an obstacle
+ */
 public class QueensAttack {
   public static int queensAttack(int n, int k, int r_q, int c_q, List<List<Integer>> obstacles) {
     // Tọa độ của các vật cản gần nhất trên 8 hướng
