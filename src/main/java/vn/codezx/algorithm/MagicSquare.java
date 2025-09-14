@@ -26,6 +26,39 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Ma Trận Ma Thuật là gì?
+ * Ma trận ma thuật (Magic Square) là một ma trận vuông (ví dụ: 3x3) thỏa mãn các điều kiện sau:
+ * Chứa các số nguyên riêng biệt (thường là từ 1 đến 9 đối với ma trận 3x3).
+ * Tổng các số trên mỗi hàng, mỗi cột, và hai đường chéo chính đều bằng nhau.
+ * Giá trị tổng chung này được gọi là hằng số ma thuật. Đối với ma trận 3x3 chứa các số từ 1 đến 9, hằng số (SUM_MAGIC) này luôn là 15.
+ * SUM_MAGIC = N*(N*N +1)/2
+ * ---
+ * What is a Magic Square?
+ * A magic square is a square matrix (e.g., 3x3) that satisfies the following conditions:
+ * Contains distinct integers (usually 1 through 9 for a 3x3 matrix).
+ * The sum of the numbers in each row, each column, and the two main diagonals is the same.
+ * This overall value is called the magic constant. For a 3x3 matrix containing the numbers 1 through 9, this constant(SUM_MAGIC) is always 15.
+ * SUM_MAGIC = N*(N*N +1)/2
+ * ---
+ * Mục tiêu của bài toán
+ * Bạn được cho một ma trận 3x3 chứa các số nguyên bất kỳ. Nhiệm vụ của bạn là biến đổi ma trận này thành một ma trận ma thuật hợp lệ bằng cách thay đổi các giá trị trong ô.
+ * Mục tiêu cuối cùng là tìm ra chi phí tối thiểu để thực hiện việc biến đổi này.
+ * ---
+ * Problem Objective
+ * You are given a 3x3 matrix containing arbitrary integers. Your task is to transform this matrix into a valid magic matrix by changing the values ​​in the cells.
+ * The ultimate goal is to find the minimum cost to perform this transformation.
+ * ---
+ * Cách tính chi phí
+ * Chi phí được tính như sau:
+ * Chi phí để thay đổi một số a (trong ma trận ban đầu) thành một số b (trong ma trận ma thuật) là |a - b| (giá trị tuyệt đối của hiệu).
+ * Tổng chi phí là tổng của tất cả các chi phí thay đổi ở mỗi ô trong 9 ô của ma trận.
+ * ---
+ * Calculating Cost
+ * The cost is calculated as follows:
+ * The cost of changing a number a (in the original matrix) to a number b (in the magic matrix) is |a - b| (the absolute value of the difference).
+ * The total cost is the sum of all the costs of changes in each of the 9 cells of the matrix.
+ */
 public class MagicSquare {
   private static final int N = 3;
   private static final int MAGIC_SUM = N*((N*N) + 1)/2;
