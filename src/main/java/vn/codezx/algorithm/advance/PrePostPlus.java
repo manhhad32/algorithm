@@ -1,4 +1,4 @@
-package vn.codezx.algorithm;
+package vn.codezx.algorithm.advance;
 
 
 import java.io.FileWriter;

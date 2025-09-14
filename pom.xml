@@ -25,7 +25,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <mainClass>
-                                vn.codezx.algorithm.PrePostPlus
+                              vn.codezx.algorithm.advance.PrePostPlus
                             </mainClass>
                         </manifest>
                     </archive>

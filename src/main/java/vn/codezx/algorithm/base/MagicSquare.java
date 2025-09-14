@@ -1,4 +1,4 @@
-package vn.codezx.algorithm;/*
+package vn.codezx.algorithm.base;/*
  * This is course Microservice Product Oriented
  * MIT No Attribution
 
