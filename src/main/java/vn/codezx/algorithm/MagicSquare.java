@@ -157,9 +157,9 @@ public class MagicSquare {
 
   public static void main(String[] args) {
     List<List<Integer>> sq = List.of(
-        List.of(2, 2, 2),
-        List.of(2, 2, 2),
-        List.of(2, 2, 2)
+        List.of(8, 3, 5),
+        List.of(1, 5, 9),
+        List.of(6, 7, 2)
     );
 
     int minCost = forminMagicSquare(sq);
