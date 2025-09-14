@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * Problem Summary
  * Tóm tắt bài toán
- *You are given a square chessboard with a queen and some obstacles. Your task is to determine how many squares the queen can attack.
+ * You are given a square chessboard with a queen and some obstacles. Your task is to determine how many squares the queen can attack.
  * Bạn sẽ được cho một bàn cờ vua hình vuông, trên đó có một quân hậu và một số chướng ngại vật. Nhiệm vụ của bạn là xác định có bao nhiêu ô vuông mà quân hậu có thể tấn công.
  * Detailed Description
  * Mô tả chi tiết
@@ -54,7 +54,7 @@ import java.util.List;
  * r_q: Queen's position row number
  * c_q: số cột của vị trí quân hậu
  * c_q: column number of queen position
- *obstacles[k][2]: mỗi phần tử là một mảng gồm 2 số nguyên, thể hiện hàng và cột của một chướng ngại vật
+ * obstacles[k][2]: mỗi phần tử là một mảng gồm 2 số nguyên, thể hiện hàng và cột của một chướng ngại vật
  * obstacles[k][2]: each element is an array of 2 integers, representing the row and column of an obstacle
  */
 public class QueensAttack {
