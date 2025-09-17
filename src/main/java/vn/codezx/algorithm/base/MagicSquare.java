@@ -70,7 +70,7 @@ public class MagicSquare {
   private static void createMagicSquare(int row, int col) {
     if(row == N){
       if(isDiagMagic()) {
-        int[][] tmpMagicSquare = new int[N][];
+        int[][] tmpMagicSquare = new int[N][N];
         for(int i = 0; i < N; i++) {
           tmpMagicSquare[i] = Arrays.copyOf(square[i], N);
         }
