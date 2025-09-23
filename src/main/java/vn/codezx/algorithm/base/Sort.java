@@ -107,8 +107,6 @@ public class Sort {
       arr[j + 1] = key;
     }
   }
-
-
   public static void main(String[] args) {
     int[] testArr = {3,2,4,5,9,8,6};
     //bubbleSort(testArr);
@@ -119,11 +117,5 @@ public class Sort {
     for(int i = 0; i < testArr.length; i++) {
       System.out.print(testArr[i] + " ");
     }
-
-
-
-
   }
-
-
 }
