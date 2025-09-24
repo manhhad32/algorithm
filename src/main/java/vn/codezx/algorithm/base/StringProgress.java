@@ -69,6 +69,14 @@ public class StringProgress {
     String s2 = "silent";
     boolean isAnagramSort2Str = isAnagramSort(s1, s2);
     System.out.print("result check isAnagramSort2Str: " + isAnagramSort2Str);
+
+    String text = "Kiat Lim, the only son of Singaporean self-made billionaire Peter Lim, is carving out his own path in business and family life, unfazed by talks of nepotism.";
+    String patten = "Lim";
+    KMP kmp = new KMP();
+    int searchPos = kmp.search(text, patten);
+    System.out.println();
+    System.out.println(" pos search: "+ searchPos);
+
   }
 
 }
