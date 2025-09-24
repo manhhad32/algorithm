@@ -75,7 +75,7 @@ public class StringProgress {
     KMP kmp = new KMP();
     int searchPos = kmp.search(text, patten);
     System.out.println();
-    System.out.println(" pos search: "+ searchPos);
+    System.out.println("pos sub text search: "+ searchPos);
 
   }
 
